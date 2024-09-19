@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS countries
     id           UUID DEFAULT gen_random_uuid(),
     city_name    VARCHAR UNIQUE ,
     country      country,
-    nationality  INTEGER PRIMARY KEY,
+    nationality  VARCHAR PRIMARY KEY,
     flag         VARCHAR
 );
 
