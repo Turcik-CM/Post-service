@@ -161,7 +161,8 @@ func (p *PostStorage) ListPosts(in *pb.PostList) (*pb.PostListResponse, error) {
 	}, nil
 }
 func (p *PostStorage) DeletePost(in *pb.PostId) (*pb.Message, error) {
-	query := `UPDATE posts SET is_deleted = true WHERE id = $1`
+	query := `update table_name set deleted_at = date_part('epoch', current_timestamp)::INT
+                  where id = $1 and deleted_at = 0`
 
 	_, err := p.db.ExecContext(context.Background(), query, in.Id)
 	if err != nil {
