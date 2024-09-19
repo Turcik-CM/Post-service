@@ -32,7 +32,18 @@ func (l *LikeStorage) DeleteLikeComment(*pb.UserId) (*pb.Message, error) {
 	return nil, nil
 }
 
-func (l *LikeStorage) GetPostLikeCount(*pb.PostId) (*pb.Message, error)
-func (l *LikeStorage) GetCommentLikeCount(*pb.Like) (*pb.PostListResponse, error)
-func (l *LikeStorage) GetUsersWhichLikePost(*pb.PostId) (*pb.PostListResponse, error)
-func (l *LikeStorage) GetUsersWhichLikeComment(*pb.CommentId) (*pb.PostListResponse, error)
+func (l *LikeStorage) GetPostLikeCount(*pb.PostId) (*pb.Message, error) {
+	return nil, nil
+}
+
+func (l *LikeStorage) GetCommentLikeCount(*pb.Like) (*pb.PostListResponse, error) {
+	return nil, nil
+}
+
+func (l *LikeStorage) GetUsersWhichLikePost(*pb.PostId) (*pb.PostListResponse, error) {
+	return nil, nil
+}
+
+func (l *LikeStorage) GetUsersWhichLikeComment(*pb.CommentId) (*pb.PostListResponse, error) {
+	return nil, nil
+}
