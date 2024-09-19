@@ -57,7 +57,7 @@ type PostServiceClient interface {
 	ListPosts(ctx context.Context, in *PostList, opts ...grpc.CallOption) (*PostListResponse, error)
 	DeletePost(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*Message, error)
 	AddImageToPost(ctx context.Context, in *ImageUrl, opts ...grpc.CallOption) (*PostResponse, error)
-	RemoveImageFromPost(ctx context.Context, in *ImageUrl, opts ...grpc.CallOption) (*PostListResponse, error)
+	RemoveImageFromPost(ctx context.Context, in *ImageUrl, opts ...grpc.CallOption) (*Message, error)
 	GetPostByCountry(ctx context.Context, in *PostCountry, opts ...grpc.CallOption) (*PostListResponse, error)
 	// like
 	AddLikePost(ctx context.Context, in *LikePost, opts ...grpc.CallOption) (*LikeResponse, error)
@@ -148,9 +148,9 @@ func (c *postServiceClient) AddImageToPost(ctx context.Context, in *ImageUrl, op
 	return out, nil
 }
 
-func (c *postServiceClient) RemoveImageFromPost(ctx context.Context, in *ImageUrl, opts ...grpc.CallOption) (*PostListResponse, error) {
+func (c *postServiceClient) RemoveImageFromPost(ctx context.Context, in *ImageUrl, opts ...grpc.CallOption) (*Message, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PostListResponse)
+	out := new(Message)
 	err := c.cc.Invoke(ctx, PostService_RemoveImageFromPost_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -349,7 +349,7 @@ type PostServiceServer interface {
 	ListPosts(context.Context, *PostList) (*PostListResponse, error)
 	DeletePost(context.Context, *PostId) (*Message, error)
 	AddImageToPost(context.Context, *ImageUrl) (*PostResponse, error)
-	RemoveImageFromPost(context.Context, *ImageUrl) (*PostListResponse, error)
+	RemoveImageFromPost(context.Context, *ImageUrl) (*Message, error)
 	GetPostByCountry(context.Context, *PostCountry) (*PostListResponse, error)
 	// like
 	AddLikePost(context.Context, *LikePost) (*LikeResponse, error)
@@ -395,7 +395,7 @@ func (UnimplementedPostServiceServer) DeletePost(context.Context, *PostId) (*Mes
 func (UnimplementedPostServiceServer) AddImageToPost(context.Context, *ImageUrl) (*PostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddImageToPost not implemented")
 }
-func (UnimplementedPostServiceServer) RemoveImageFromPost(context.Context, *ImageUrl) (*PostListResponse, error) {
+func (UnimplementedPostServiceServer) RemoveImageFromPost(context.Context, *ImageUrl) (*Message, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveImageFromPost not implemented")
 }
 func (UnimplementedPostServiceServer) GetPostByCountry(context.Context, *PostCountry) (*PostListResponse, error) {

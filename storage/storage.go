@@ -11,7 +11,7 @@ type PostStorage interface {
 	ListPosts(in *pb.PostList) (*pb.PostListResponse, error)
 	DeletePost(in *pb.PostId) (*pb.Message, error)
 	AddImageToPost(in *pb.ImageUrl) (*pb.PostResponse, error)
-	RemoveImageFromPost(in *pb.ImageUrl) (*pb.PostListResponse, error)
+	RemoveImageFromPost(in *pb.ImageUrl) (*pb.Message, error)
 	GetPostByCountry(in *pb.PostCountry) (*pb.PostListResponse, error)
 }
 

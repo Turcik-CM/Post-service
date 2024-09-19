@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS countries
 CREATE TABLE IF NOT EXISTS posts
 (
     id          UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
-    username    UUID    NOT NULL,
+    user_id    UUID    NOT NULL,
     nationality VARCHAR REFERENCES countries(nationality),
     location    VARCHAR NOT NULL,
     title       VARCHAR NOT NULL,
