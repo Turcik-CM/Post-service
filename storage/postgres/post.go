@@ -22,12 +22,37 @@ func NewPostStorage(db *sqlx.DB) storage.PostStorage {
 }
 
 func (p *PostStorage) CreatePost(in *pb.Post) (*pb.PostResponse, error) {
+	query1 := `SELECT name FROM hashtag WHERE name = $1`
+
+	err := p.db.QueryRowContext(context.Background(), query1, in.Hashtag).Scan(&in.Hashtag)
+	if err == sql.ErrNoRows {
+		query2 := `INSERT INTO hashtag (name, description) VALUES ($1, $2)`
+		_, err = p.db.ExecContext(context.Background(), query2, in.Hashtag, "Hashtag description")
+		if err != nil {
+			return nil, fmt.Errorf("failed to insert new hashtag: %v", err)
+		}
+	} else if err != nil {
+		return nil, fmt.Errorf("failed to query hashtag: %v", err)
+	}
+
+	query4 := `SELECT nationality FROM hashtag WHERE nationality = $1`
+
+	err = p.db.QueryRowContext(context.Background(), query4, in.Nationality).Scan(&in.Nationality)
+	if err == sql.ErrNoRows {
+		query3 := `INSERT INTO countries (nationality, city_name, country, flag) VALUES ($1, $2, $3, $4)`
+		_, err = p.db.ExecContext(context.Background(), query3, in.Nationality, "uz", "Uzbekistan", "dodi")
+		if err != nil {
+			return nil, fmt.Errorf("failed to insert new nationality: %v", err)
+		}
+	}
+
 	query := `INSERT INTO posts (user_id, nationality, location, title, hashtag, content) 
-	          VALUES ($1, $2, $3, $4, $5, $6, $7) 
-	          RETURNING id, username, nationality, location, title, hashtag, content, created_at`
+	          VALUES ($1, $2, $3, $4, $5, $6) 
+	          RETURNING id, user_id, nationality, location, title, hashtag, content, created_at`
 
 	var res pb.PostResponse
-	err := p.db.QueryRowContext(context.Background(), query, in.UserId, in.Nationality, in.Location, in.Title, in.Hashtag, in.Content).Scan(
+	err = p.db.QueryRowContext(context.Background(), query,
+		in.UserId, in.Nationality, in.Location, in.Title, in.Hashtag, in.Content).Scan(
 		&res.Id,
 		&res.UserId,
 		&res.Nationality,
@@ -37,11 +62,12 @@ func (p *PostStorage) CreatePost(in *pb.Post) (*pb.PostResponse, error) {
 		&res.Content,
 		&res.CreatedAt)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create post: %v", err)
 	}
 
 	return &res, nil
 }
+
 func (p *PostStorage) UpdatePost(in *pb.UpdateAPost) (*pb.PostResponse, error) {
 	query := `UPDATE posts SET `
 	args := []interface{}{}
@@ -86,15 +112,16 @@ func (p *PostStorage) UpdatePost(in *pb.UpdateAPost) (*pb.PostResponse, error) {
 
 	if len(updateFields) > 0 {
 		query += fmt.Sprintf("%s, updated_at = $%d", strings.Join(updateFields, ", "), argIndex)
-		args = append(args, time.Now().String())
+		args = append(args, time.Now())
 		argIndex++
 	} else {
 		return nil, fmt.Errorf("hech qanday maydon yangilanmadi")
 	}
 
-	query += fmt.Sprintf(" WHERE id = $%d RETURNING id, username, nationality, location, title, hashtag, content, image_url, created_at, updated_at", argIndex)
+	query += fmt.Sprintf(" WHERE id = $%d RETURNING id, user_id, nationality, location, title, hashtag, content, image_url, created_at, updated_at", argIndex)
 	args = append(args, in.Id)
 
+	fmt.Println("dodi")
 	var res pb.PostResponse
 	err := p.db.QueryRowContext(context.Background(), query, args...).Scan(
 		&res.Id, &res.UserId, &res.Nationality, &res.Location, &res.Title, &res.Hashtag, &res.Content, &res.ImageUrl, &res.CreatedAt, &res.UpdatedAt)
@@ -102,6 +129,7 @@ func (p *PostStorage) UpdatePost(in *pb.UpdateAPost) (*pb.PostResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("dodi")
 
 	return &res, nil
 }
@@ -123,22 +151,29 @@ func (p *PostStorage) GetPostByID(in *pb.PostId) (*pb.PostResponse, error) {
 
 	return &res, nil
 }
+
 func (p *PostStorage) ListPosts(in *pb.PostList) (*pb.PostListResponse, error) {
-	query := `SELECT id, user_id, nationality, location, title, hashtag, content, image_url, created_at, updated_at FROM posts WHERE deleted_at = 0 `
+	query := "SELECT id, user_id, nationality, location, title, hashtag, content, image_url, created_at, updated_at FROM posts WHERE deleted_at = 0"
 	args := []interface{}{}
 
-	if in.Country != "" {
-		query += " AND country = $1"
-		args = append(args, in.Country)
-	}
-
 	if in.Hashtag != "" {
-		query += " AND hashtag = $2"
+		query += " AND hashtag = $1"
 		args = append(args, in.Hashtag)
 	}
 
-	query += " LIMIT $3 OFFSET $4"
-	args = append(args, in.Limit, in.Offset)
+	if in.Country != "" {
+		query += " AND nationality = $" + fmt.Sprintf("%d", len(args)+1)
+		args = append(args, in.Country)
+	}
+
+	if in.Limit > 0 {
+		query += " LIMIT $" + fmt.Sprintf("%d", len(args)+1)
+		args = append(args, in.Limit)
+	}
+	if in.Offset >= 0 {
+		query += " OFFSET $" + fmt.Sprintf("%d", len(args)+1)
+		args = append(args, in.Offset)
+	}
 
 	rows, err := p.db.Query(query, args...)
 	if err != nil {
@@ -160,8 +195,9 @@ func (p *PostStorage) ListPosts(in *pb.PostList) (*pb.PostListResponse, error) {
 		Post: posts,
 	}, nil
 }
+
 func (p *PostStorage) DeletePost(in *pb.PostId) (*pb.Message, error) {
-	query := `update table_name set deleted_at = date_part('epoch', current_timestamp)::INT
+	query := `update posts set deleted_at = date_part('epoch', current_timestamp)::INT
                   where id = $1 and deleted_at = 0`
 
 	_, err := p.db.ExecContext(context.Background(), query, in.Id)
@@ -173,12 +209,13 @@ func (p *PostStorage) DeletePost(in *pb.PostId) (*pb.Message, error) {
 		Massage: "Post muvaffaqiyatli o'chirildi (soft delete)",
 	}, nil
 }
+
 func (p *PostStorage) AddImageToPost(in *pb.ImageUrl) (*pb.PostResponse, error) {
-	query := `UPDATE tweets SET image_url = $1, updated_at = $2 WHERE id = $3`
+	query := `UPDATE posts SET image_url = $1, updated_at = $2 WHERE id = $3`
 
-	now := time.Now().String()
+	fmt.Println("dodi")
 
-	_, err := p.db.ExecContext(context.Background(), query, in.Url, now, in.PostId)
+	_, err := p.db.ExecContext(context.Background(), query, in.Url, time.Now(), in.PostId)
 	if err != nil {
 		return nil, err
 	}
@@ -195,16 +232,16 @@ func (p *PostStorage) AddImageToPost(in *pb.ImageUrl) (*pb.PostResponse, error) 
 	return res, nil
 }
 func (p *PostStorage) RemoveImageFromPost(in *pb.ImageUrl) (*pb.Message, error) {
-	query := `UPDATE posts SET image_url = '' WHERE id = $1 RETURNING id`
+	query := `UPDATE posts SET image_url = 'no image' WHERE id = $1 RETURNING id`
 
-	var postId int64
+	var postId string
 	err := p.db.QueryRowContext(context.Background(), query, in.PostId).Scan(&postId)
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.Message{
-		Massage: fmt.Sprintf("Post %d rasm muvaffaqiyatli o'chirildi", postId),
+		Massage: fmt.Sprintf("Post %s rasm muvaffaqiyatli o'chirildi", postId),
 	}, nil
 }
 

@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"database/sql"
 	pb "post-servic/genproto/post"
 	"post-servic/storage"
 	"time"
@@ -19,7 +20,6 @@ func NewCommentStorage(db *sqlx.DB) storage.CommentStorage {
 	}
 }
 
-// CreateComment - yangi izoh qo'shish
 func (c *CommentStorage) CreateComment(in *pb.CommentPost) (*pb.CommentResponse, error) {
 	id := uuid.New()
 	createdAt := time.Now()
@@ -43,7 +43,6 @@ func (c *CommentStorage) CreateComment(in *pb.CommentPost) (*pb.CommentResponse,
 	}, nil
 }
 
-// UpdateComment - izohni yangilash
 func (c *CommentStorage) UpdateComment(in *pb.UpdateAComment) (*pb.CommentResponse, error) {
 	updatedAt := time.Now()
 
@@ -60,7 +59,6 @@ func (c *CommentStorage) UpdateComment(in *pb.UpdateAComment) (*pb.CommentRespon
 	return &comment, nil
 }
 
-// GetCommentByID - ID bo'yicha izohni olish
 func (c *CommentStorage) GetCommentByID(in *pb.CommentId) (*pb.CommentResponse, error) {
 	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE id = $1`
 
@@ -83,7 +81,6 @@ func (c *CommentStorage) DeleteComment(in *pb.CommentId) (*pb.Message, error) {
 	return &pb.Message{Massage: "Comment deleted successfully"}, nil
 }
 
-// GetCommentByUsername - foydalanuvchi nomi bo'yicha izohlarni olish
 func (c *CommentStorage) GetCommentByUsername(in *pb.Username) (*pb.CommentResponse, error) {
 	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE user_id = $1`
 
@@ -95,7 +92,6 @@ func (c *CommentStorage) GetCommentByUsername(in *pb.Username) (*pb.CommentRespo
 	return &comment, nil
 }
 
-// ListComments - izohlar ro'yxatini olish
 func (c *CommentStorage) ListComments(in *pb.CommentList) (*pb.CommentsR, error) {
 	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE post_id = $1 LIMIT $2 OFFSET $3`
 	rows, err := c.db.Query(query, in.PostId, in.Limit, in.Offset)
@@ -116,12 +112,26 @@ func (c *CommentStorage) ListComments(in *pb.CommentList) (*pb.CommentsR, error)
 	return &pb.CommentsR{Comments: comments}, nil
 }
 
-// GetCommentByPostID - post ID bo'yicha izohlarni olish
 func (c *CommentStorage) GetCommentByPostID(in *pb.PostId) (*pb.CommentsR, error) {
-	return c.ListComments(&pb.CommentList{PostId: in.Id})
+	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE post_id = $1`
+	rows, err := c.db.Query(query, in.Id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var comments []*pb.CommentResponse
+	for rows.Next() {
+		var comment pb.CommentResponse
+		if err := rows.Scan(&comment.Id, &comment.UserId, &comment.PostId, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt); err != nil {
+			return nil, err
+		}
+		comments = append(comments, &comment)
+	}
+
+	return &pb.CommentsR{Comments: comments}, nil
 }
 
-// GetAllUserComments - foydalanuvchining barcha izohlarini olish
 func (c *CommentStorage) GetAllUserComments(in *pb.Username) (*pb.CommentsR, error) {
 	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE user_id = $1`
 	rows, err := c.db.Query(query, in.Username)
@@ -142,9 +152,7 @@ func (c *CommentStorage) GetAllUserComments(in *pb.Username) (*pb.CommentsR, err
 	return &pb.CommentsR{Comments: comments}, nil
 }
 
-// GetMostlikeCommentPost - eng ko'p yoqtirilgan izohni olish
 func (c *CommentStorage) GetMostlikeCommentPost(in *pb.PostId) (*pb.CommentResponse, error) {
-	// Eng ko'p yoqtirilgan izohni olish uchun so'rov
 	query := `
 		SELECT c.id, c.user_id, c.post_id, c.content, c.created_at, c.updated_at, COUNT(l.user_id) as like_count
 		FROM comments c
@@ -166,9 +174,9 @@ func (c *CommentStorage) GetMostlikeCommentPost(in *pb.PostId) (*pb.CommentRespo
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil // Agar izoh topilmasa, nil qaytarish
+			return nil, nil
 		}
-		return nil, err // Boshqa xatoliklar
+		return nil, err
 	}
 
 	return &comment, nil
