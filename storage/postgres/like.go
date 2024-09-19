@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"github.com/jmoiron/sqlx"
 	pb "post-servic/genproto/post"
 	"post-servic/storage"
@@ -17,23 +18,77 @@ func NewLikeStorage(db *sqlx.DB) storage.LikeStorage {
 }
 
 func (l *LikeStorage) AddLikePost(in *pb.LikePost) (*pb.LikeResponse, error) {
-	return nil, nil
+	query := `INSERT INTO likes (user_id, post_id, created_at) 
+	          VALUES ($1, $2, NOW()) 
+	          RETURNING user_id, post_id`
+
+	var res pb.LikeResponse
+	err := l.db.QueryRowContext(context.Background(), query, in.UserId, in.PostId).Scan(
+		&res.UserId, &res.PostId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
 
 func (l *LikeStorage) DeleteLikePost(in *pb.LikePost) (*pb.Message, error) {
-	return nil, nil
+	query := `DELETE FROM likes WHERE user_id = $1 AND post_id = $2`
+
+	_, err := l.db.ExecContext(context.Background(), query, in.UserId, in.PostId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.Message{
+		Massage: "Like muvaffaqiyatli o'chirildi.",
+	}, nil
 }
 
-func (l *LikeStorage) AddLikeComment(in *pb.LikePost) (*pb.LikeResponse, error) {
-	return nil, nil
+func (l *LikeStorage) AddLikeComment(in *pb.LikeCommit) (*pb.LikeComResponse, error) {
+	query := `INSERT INTO likes (user_id, post_id, created_at) 
+	          VALUES ($1, $2, NOW()) 
+	          RETURNING user_id, post_id`
+
+	var res pb.LikeComResponse
+	err := l.db.QueryRowContext(context.Background(), query, in.UserId, in.CommitId).Scan(
+		&res.UserId, &res.CommitId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
 
-func (l *LikeStorage) DeleteLikeComment(in *pb.LikePost) (*pb.Message, error) {
-	return nil, nil
+func (l *LikeStorage) DeleteLikeComment(in *pb.LikeCommit) (*pb.Message, error) {
+	query := `DELETE FROM likes WHERE user_id = $1 AND post_id = $2`
+
+	_, err := l.db.ExecContext(context.Background(), query, in.UserId, in.CommitId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.Message{
+		Massage: "Like muvaffaqiyatli o'chirildi.",
+	}, nil
 }
 
 func (l *LikeStorage) GetPostLikeCount(in *pb.PostId) (*pb.PostResponse, error) {
-	return nil, nil
+	query := `SELECT COUNT(*) FROM likes WHERE post_id = $1`
+
+	var likeCount int64
+	err := l.db.QueryRowContext(context.Background(), query, in.Id).Scan(&likeCount)
+	if err != nil {
+		return nil, err
+	}
+
+	// Javobni qaytaramiz
+	return &pb.PostResponse{
+		Id:    in.Id,
+		Count: likeCount,
+	}, nil
 }
 
 func (l *LikeStorage) GetCommentLikeCount(in *pb.PostId) (*pb.CommentResponse, error) {
