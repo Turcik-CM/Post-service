@@ -16,23 +16,34 @@ func NewLikeStorage(db *sqlx.DB) storage.LikeStorage {
 	}
 }
 
-func (l *LikeStorage) AddLikePost(*pb.LikePost) (*pb.LikePost, error) {
+func (l *LikeStorage) AddLikePost(in *pb.LikePost) (*pb.LikeResponse, error) {
 	return nil, nil
 }
 
-func (l *LikeStorage) DeleteLikePost(*pb.LikeId) (*pb.Message, error) {
+func (l *LikeStorage) DeleteLikePost(in *pb.LikePost) (*pb.Message, error) {
 	return nil, nil
 }
 
-func (l *LikeStorage) AddLikeComment(*pb.LikeId) (*pb.PostListResponse, error) {
+func (l *LikeStorage) AddLikeComment(in *pb.LikePost) (*pb.LikeResponse, error) {
 	return nil, nil
 }
 
-func (l *LikeStorage) DeleteLikeComment(*pb.UserId) (*pb.Message, error) {
+func (l *LikeStorage) DeleteLikeComment(in *pb.LikePost) (*pb.Message, error) {
 	return nil, nil
 }
 
-func (l *LikeStorage) GetPostLikeCount(*pb.PostId) (*pb.Message, error)
-func (l *LikeStorage) GetCommentLikeCount(*pb.Like) (*pb.PostListResponse, error)
-func (l *LikeStorage) GetUsersWhichLikePost(*pb.PostId) (*pb.PostListResponse, error)
-func (l *LikeStorage) GetUsersWhichLikeComment(*pb.CommentId) (*pb.PostListResponse, error)
+func (l *LikeStorage) GetPostLikeCount(in *pb.PostId) (*pb.PostResponse, error) {
+	return nil, nil
+}
+
+func (l *LikeStorage) GetCommentLikeCount(in *pb.PostId) (*pb.CommentResponse, error) {
+	return nil, nil
+}
+
+func (l *LikeStorage) GetUsersWhichLikePost(in *pb.PostId) (*pb.Users, error) {
+	return nil, nil
+}
+
+func (l *LikeStorage) GetUsersWhichLikeComment(in *pb.CommentId) (*pb.Users, error) {
+	return nil, nil
+}

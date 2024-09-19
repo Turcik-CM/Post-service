@@ -16,24 +16,27 @@ func NewPostStorage(db *sqlx.DB) storage.PostStorage {
 	}
 }
 
-func (p *PostStorage) CreatePost(*pb.Post) (*pb.PostResponse, error) {
+func (p *PostStorage) CreatePost(in *pb.Post) (*pb.PostResponse, error) {
 	return &pb.PostResponse{}, nil
 }
-func (p *PostStorage) UpdatePost(*pb.UpdateAPost) (*pb.PostResponse, error) {
+func (p *PostStorage) UpdatePost(in *pb.UpdateAPost) (*pb.PostResponse, error) {
 	return &pb.PostResponse{}, nil
 }
-func (p *PostStorage) GetPostByID(*pb.PostId) (*pb.PostResponse, error) {
+func (p *PostStorage) GetPostByID(in *pb.PostId) (*pb.PostResponse, error) {
 	return &pb.PostResponse{}, nil
 }
-func (p *PostStorage) ListPosts(*pb.PostList) (*pb.PostListResponse, error) {
+func (p *PostStorage) ListPosts(in *pb.PostList) (*pb.PostListResponse, error) {
 	return &pb.PostListResponse{}, nil
 }
-func (p *PostStorage) DeletePost(*pb.PostId) (*pb.Message, error) {
+func (p *PostStorage) DeletePost(in *pb.PostId) (*pb.Message, error) {
 	return &pb.Message{}, nil
 }
-func (p *PostStorage) RemoveImageFromPost(*pb.Post) (*pb.PostListResponse, error) {
+func (p *PostStorage) AddImageToPost(in *pb.ImageUrl) (*pb.PostResponse, error) {
+	return &pb.PostResponse{}, nil
+}
+func (p *PostStorage) RemoveImageFromPost(in *pb.ImageUrl) (*pb.PostListResponse, error) {
 	return &pb.PostListResponse{}, nil
 }
-func (p *PostStorage) GetPostByCountry(*pb.PostCountry) (*pb.PostListResponse, error) {
+func (p *PostStorage) GetPostByCountry(in *pb.PostCountry) (*pb.PostListResponse, error) {
 	return &pb.PostListResponse{}, nil
 }
