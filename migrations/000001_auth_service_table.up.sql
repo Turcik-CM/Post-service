@@ -1,3 +1,5 @@
+CREATE TYPE country AS ENUM('Azerbaijan', 'Kazakhstan', 'Kyrgyzstan', 'Turkey', 'Uzbekistan');
+
 CREATE TABLE IF NOT EXISTS hashtag
 (
     id          UUID UNIQUE DEFAULT gen_random_uuid(),
@@ -7,10 +9,11 @@ CREATE TABLE IF NOT EXISTS hashtag
 
 CREATE TABLE IF NOT EXISTS countries
 (
-    id          UUID DEFAULT gen_random_uuid(),
-    city_name   VARCHAR,
-    country     VARCHAR,
-    nationality VARCHAR PRIMARY KEY
+    id           UUID DEFAULT gen_random_uuid(),
+    city_name    VARCHAR UNIQUE ,
+    country      country,
+    nationality  INTEGER PRIMARY KEY,
+    flag         VARCHAR
 );
 
 
@@ -32,7 +35,7 @@ CREATE TABLE IF NOT EXISTS posts
 CREATE TABLE IF NOT EXISTS comments
 (
     id         UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
-    username   UUID NOT NULL,
+    user_id   UUID NOT NULL,
     post_id    UUID REFERENCES posts (id) ON DELETE CASCADE,
     content    TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
