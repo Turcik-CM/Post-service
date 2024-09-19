@@ -64,8 +64,8 @@ type PostServiceClient interface {
 	DeleteLikePost(ctx context.Context, in *LikePost, opts ...grpc.CallOption) (*Message, error)
 	AddLikeComment(ctx context.Context, in *LikeCommit, opts ...grpc.CallOption) (*LikeComResponse, error)
 	DeleteLikeComment(ctx context.Context, in *LikeCommit, opts ...grpc.CallOption) (*Message, error)
-	GetPostLikeCount(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*PostResponse, error)
-	GetMostLikedComment(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*CommentResponse, error)
+	GetPostLikeCount(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*LikeCount, error)
+	GetMostLikedComment(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*LikeCount, error)
 	GetUsersWhichLikePost(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*Users, error)
 	GetUsersWhichLikeComment(ctx context.Context, in *CommentId, opts ...grpc.CallOption) (*Users, error)
 	// comments
@@ -208,9 +208,9 @@ func (c *postServiceClient) DeleteLikeComment(ctx context.Context, in *LikeCommi
 	return out, nil
 }
 
-func (c *postServiceClient) GetPostLikeCount(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*PostResponse, error) {
+func (c *postServiceClient) GetPostLikeCount(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*LikeCount, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PostResponse)
+	out := new(LikeCount)
 	err := c.cc.Invoke(ctx, PostService_GetPostLikeCount_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -218,9 +218,9 @@ func (c *postServiceClient) GetPostLikeCount(ctx context.Context, in *PostId, op
 	return out, nil
 }
 
-func (c *postServiceClient) GetMostLikedComment(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*CommentResponse, error) {
+func (c *postServiceClient) GetMostLikedComment(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*LikeCount, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CommentResponse)
+	out := new(LikeCount)
 	err := c.cc.Invoke(ctx, PostService_GetMostLikedComment_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -356,8 +356,8 @@ type PostServiceServer interface {
 	DeleteLikePost(context.Context, *LikePost) (*Message, error)
 	AddLikeComment(context.Context, *LikeCommit) (*LikeComResponse, error)
 	DeleteLikeComment(context.Context, *LikeCommit) (*Message, error)
-	GetPostLikeCount(context.Context, *PostId) (*PostResponse, error)
-	GetMostLikedComment(context.Context, *PostId) (*CommentResponse, error)
+	GetPostLikeCount(context.Context, *PostId) (*LikeCount, error)
+	GetMostLikedComment(context.Context, *PostId) (*LikeCount, error)
 	GetUsersWhichLikePost(context.Context, *PostId) (*Users, error)
 	GetUsersWhichLikeComment(context.Context, *CommentId) (*Users, error)
 	// comments
@@ -413,10 +413,10 @@ func (UnimplementedPostServiceServer) AddLikeComment(context.Context, *LikeCommi
 func (UnimplementedPostServiceServer) DeleteLikeComment(context.Context, *LikeCommit) (*Message, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteLikeComment not implemented")
 }
-func (UnimplementedPostServiceServer) GetPostLikeCount(context.Context, *PostId) (*PostResponse, error) {
+func (UnimplementedPostServiceServer) GetPostLikeCount(context.Context, *PostId) (*LikeCount, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPostLikeCount not implemented")
 }
-func (UnimplementedPostServiceServer) GetMostLikedComment(context.Context, *PostId) (*CommentResponse, error) {
+func (UnimplementedPostServiceServer) GetMostLikedComment(context.Context, *PostId) (*LikeCount, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMostLikedComment not implemented")
 }
 func (UnimplementedPostServiceServer) GetUsersWhichLikePost(context.Context, *PostId) (*Users, error) {

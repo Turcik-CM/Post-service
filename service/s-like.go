@@ -1,37 +1,38 @@
 package service
 
 import (
+	"context"
 	pb "post-servic/genproto/post"
 )
 
-func (l *PostService) AddLikePost(*pb.LikePost) (*pb.LikePost, error) {
+func (l *PostService) AddLikePost(ctx context.Context, in *pb.LikePost) (*pb.LikeResponse, error) {
 	return nil, nil
 }
 
-func (l *PostService) DeleteLikePost(*pb.LikeId) (*pb.Message, error) {
+func (l *PostService) DeleteLikePost(ctx context.Context, in *pb.LikePost) (*pb.Message, error) {
 	return nil, nil
 }
 
-func (l *PostService) AddLikeComment(*pb.LikeId) (*pb.PostListResponse, error) {
+func (l *PostService) AddLikeComment(ctx context.Context, in *pb.LikeCommit) (*pb.LikeComResponse, error) {
 	return nil, nil
 }
 
-func (l *PostService) DeleteLikeComment(*pb.UserId) (*pb.Message, error) {
+func (l *PostService) DeleteLikeComment(ctx context.Context, in *pb.LikeCommit) (*pb.Message, error) {
 	return nil, nil
 }
 
-func (l *PostService) GetPostLikeCount(*pb.PostId) (*pb.Message, error) {
+func (l *PostService) GetPostLikeCount(ctx context.Context, in *pb.PostId) (*pb.LikeCount, error) {
 	return nil, nil
 }
 
-func (l *PostService) GetCommentLikeCount(*pb.Like) (*pb.PostListResponse, error) {
+func (l *PostService) GetMostLikedComment(ctx context.Context, in *pb.PostId) (*pb.LikeCount, error) {
 	return nil, nil
 }
 
-func (l *PostService) GetUsersWhichLikePost(*pb.PostId) (*pb.PostListResponse, error) {
+func (l *PostService) GetUsersWhichLikePost(ctx context.Context, in *pb.PostId) (*pb.Users, error) {
 	return nil, nil
 }
 
-func (l *PostService) GetUsersWhichLikeComment(*pb.CommentId) (*pb.PostListResponse, error) {
+func (l *PostService) GetUsersWhichLikeComment(ctx context.Context, in *pb.CommentId) (*pb.Users, error) {
 	return nil, nil
 }

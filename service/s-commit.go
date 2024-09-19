@@ -1,41 +1,42 @@
 package service
 
 import (
+	"context"
 	pb "post-servic/genproto/post"
 )
 
-func (c *PostService) CreateComment(in *pb.CommentPost) (*pb.CommentResponse, error) {
+func (c *PostService) CreateComment(ctx context.Context, in *pb.CommentPost) (*pb.CommentResponse, error) {
 	return nil, nil
 }
 
-func (c *PostService) UpdateComment(in *pb.UpdateAComment) (*pb.CommentResponse, error) {
+func (c *PostService) UpdateComment(ctx context.Context, in *pb.UpdateAComment) (*pb.CommentResponse, error) {
 	return nil, nil
 }
 
-func (c *PostService) GetCommentByID(in *pb.CommentId) (*pb.CommentResponse, error) {
+func (c *PostService) GetCommentByID(ctx context.Context, in *pb.CommentId) (*pb.CommentResponse, error) {
 	return nil, nil
 }
 
-func (c *PostService) GetCommentByUsername(in *pb.Username) (*pb.CommentResponse, error) {
+func (c *PostService) GetCommentByUsername(ctx context.Context, in *pb.Username) (*pb.CommentResponse, error) {
 	return nil, nil
 }
 
-func (c *PostService) ListComments(in *pb.CommentList) (*pb.CommentsR, error) {
+func (c *PostService) ListComments(ctx context.Context, in *pb.CommentList) (*pb.CommentsR, error) {
 	return nil, nil
 }
 
-func (c *PostService) eleteComment(in *pb.CommentId) (*pb.Message, error) {
+func (c *PostService) DeleteComment(ctx context.Context, in *pb.CommentId) (*pb.Message, error) {
 	return nil, nil
 }
 
-func (c *PostService) GetCommentByPostID(*pb.PostId) (*pb.PostListResponse, error) {
+func (c *PostService) GetCommentByPostID(ctx context.Context, in *pb.PostId) (*pb.CommentsR, error) {
 	return nil, nil
 }
 
-func (c *PostService) GetAllUserComments(*pb.CommentId) (*pb.PostListResponse, error) {
+func (c *PostService) GetAllUserComments(ctx context.Context, in *pb.Username) (*pb.CommentsR, error) {
 	return nil, nil
 }
 
-func (c *PostService) GetMostlikeCommentPost(*pb.PostId) (*pb.PostListResponse, error) {
+func (c *PostService) GetMostlikeCommentPost(ctx context.Context, in *pb.PostId) (*pb.CommentResponse, error) {
 	return nil, nil
 }

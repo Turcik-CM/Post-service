@@ -75,24 +75,34 @@ func (l *LikeStorage) DeleteLikeComment(in *pb.LikeCommit) (*pb.Message, error) 
 	}, nil
 }
 
-func (l *LikeStorage) GetPostLikeCount(in *pb.PostId) (*pb.PostResponse, error) {
+func (l *LikeStorage) GetPostLikeCount(in *pb.PostId) (*pb.LikeCount, error) {
 	query := `SELECT COUNT(*) FROM likes WHERE post_id = $1`
 
-	var likeCount int64
+	var likeCount string
 	err := l.db.QueryRowContext(context.Background(), query, in.Id).Scan(&likeCount)
 	if err != nil {
 		return nil, err
 	}
 
-	// Javobni qaytaramiz
-	return &pb.PostResponse{
+	return &pb.LikeCount{
 		Id:    in.Id,
 		Count: likeCount,
 	}, nil
 }
 
-func (l *LikeStorage) GetCommentLikeCount(in *pb.PostId) (*pb.CommentResponse, error) {
-	return nil, nil
+func (l *LikeStorage) GetMostLikedComment(in *pb.PostId) (*pb.LikeCount, error) {
+	query := `SELECT COUNT(*) FROM likes WHERE post_id = $1`
+
+	var likeCount string
+	err := l.db.QueryRowContext(context.Background(), query, in.Id).Scan(&likeCount)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.LikeCount{
+		Id:    in.Id,
+		Count: likeCount,
+	}, nil
 }
 
 func (l *LikeStorage) GetUsersWhichLikePost(in *pb.PostId) (*pb.Users, error) {

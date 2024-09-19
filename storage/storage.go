@@ -20,8 +20,8 @@ type LikeStorage interface {
 	DeleteLikePost(in *pb.LikePost) (*pb.Message, error)
 	AddLikeComment(in *pb.LikeCommit) (*pb.LikeComResponse, error)
 	DeleteLikeComment(in *pb.LikeCommit) (*pb.Message, error)
-	GetPostLikeCount(in *pb.PostId) (*pb.PostResponse, error)
-	GetCommentLikeCount(in *pb.PostId) (*pb.CommentResponse, error)
+	GetPostLikeCount(in *pb.PostId) (*pb.LikeCount, error)
+	GetMostLikedComment(in *pb.PostId) (*pb.LikeCount, error)
 	GetUsersWhichLikePost(in *pb.PostId) (*pb.Users, error)
 	GetUsersWhichLikeComment(in *pb.CommentId) (*pb.Users, error)
 }
