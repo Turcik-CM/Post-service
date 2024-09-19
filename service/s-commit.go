@@ -4,27 +4,27 @@ import (
 	pb "post-servic/genproto/post"
 )
 
-func (c *PostService) CreateComment(*pb.CommentPost) (*pb.LikePost, error) {
+func (c *PostService) CreateComment(in *pb.CommentPost) (*pb.CommentResponse, error) {
 	return nil, nil
 }
 
-func (c *PostService) UpdateComment(*pb.UpdateAComment) (*pb.Message, error) {
+func (c *PostService) UpdateComment(in *pb.UpdateAComment) (*pb.CommentResponse, error) {
 	return nil, nil
 }
 
-func (c *PostService) GetCommentByID(*pb.CommentId) (*pb.PostListResponse, error) {
+func (c *PostService) GetCommentByID(in *pb.CommentId) (*pb.CommentResponse, error) {
 	return nil, nil
 }
 
-func (c *PostService) GetCommentByUsername(*pb.UserPostId) (*pb.Message, error) {
+func (c *PostService) GetCommentByUsername(in *pb.Username) (*pb.CommentResponse, error) {
 	return nil, nil
 }
 
-func (c *PostService) ListComments(*pb.CommentList) (*pb.Message, error) {
+func (c *PostService) ListComments(in *pb.CommentList) (*pb.CommentsR, error) {
 	return nil, nil
 }
 
-func (c *PostService) DeleteComment(*pb.CommentId) (*pb.PostListResponse, error) {
+func (c *PostService) eleteComment(in *pb.CommentId) (*pb.Message, error) {
 	return nil, nil
 }
 

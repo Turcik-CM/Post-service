@@ -31,7 +31,10 @@ func (p *PostStorage) ListPosts(in *pb.PostList) (*pb.PostListResponse, error) {
 func (p *PostStorage) DeletePost(in *pb.PostId) (*pb.Message, error) {
 	return &pb.Message{}, nil
 }
-func (p *PostStorage) RemoveImageFromPost(in *pb.Post) (*pb.PostListResponse, error) {
+func (p *PostStorage) AddImageToPost(in *pb.ImageUrl) (*pb.PostResponse, error) {
+	return &pb.PostResponse{}, nil
+}
+func (p *PostStorage) RemoveImageFromPost(in *pb.ImageUrl) (*pb.PostListResponse, error) {
 	return &pb.PostListResponse{}, nil
 }
 func (p *PostStorage) GetPostByCountry(in *pb.PostCountry) (*pb.PostListResponse, error) {

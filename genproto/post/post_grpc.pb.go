@@ -24,6 +24,7 @@ const (
 	PostService_GetPostByID_FullMethodName              = "/post.PostService/GetPostByID"
 	PostService_ListPosts_FullMethodName                = "/post.PostService/ListPosts"
 	PostService_DeletePost_FullMethodName               = "/post.PostService/DeletePost"
+	PostService_AddImageToPost_FullMethodName           = "/post.PostService/AddImageToPost"
 	PostService_RemoveImageFromPost_FullMethodName      = "/post.PostService/RemoveImageFromPost"
 	PostService_GetPostByCountry_FullMethodName         = "/post.PostService/GetPostByCountry"
 	PostService_AddLikePost_FullMethodName              = "/post.PostService/AddLikePost"
@@ -31,7 +32,7 @@ const (
 	PostService_AddLikeComment_FullMethodName           = "/post.PostService/AddLikeComment"
 	PostService_DeleteLikeComment_FullMethodName        = "/post.PostService/DeleteLikeComment"
 	PostService_GetPostLikeCount_FullMethodName         = "/post.PostService/GetPostLikeCount"
-	PostService_GetCommentLikeCount_FullMethodName      = "/post.PostService/GetCommentLikeCount"
+	PostService_GetMostLikedComment_FullMethodName      = "/post.PostService/GetMostLikedComment"
 	PostService_GetUsersWhichLikePost_FullMethodName    = "/post.PostService/GetUsersWhichLikePost"
 	PostService_GetUsersWhichLikeComment_FullMethodName = "/post.PostService/GetUsersWhichLikeComment"
 	PostService_CreateComment_FullMethodName            = "/post.PostService/CreateComment"
@@ -55,26 +56,27 @@ type PostServiceClient interface {
 	GetPostByID(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*PostResponse, error)
 	ListPosts(ctx context.Context, in *PostList, opts ...grpc.CallOption) (*PostListResponse, error)
 	DeletePost(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*Message, error)
-	RemoveImageFromPost(ctx context.Context, in *Post, opts ...grpc.CallOption) (*PostListResponse, error)
+	AddImageToPost(ctx context.Context, in *ImageUrl, opts ...grpc.CallOption) (*PostResponse, error)
+	RemoveImageFromPost(ctx context.Context, in *ImageUrl, opts ...grpc.CallOption) (*PostListResponse, error)
 	GetPostByCountry(ctx context.Context, in *PostCountry, opts ...grpc.CallOption) (*PostListResponse, error)
 	// like
-	AddLikePost(ctx context.Context, in *LikePost, opts ...grpc.CallOption) (*LikePost, error)
-	DeleteLikePost(ctx context.Context, in *LikeId, opts ...grpc.CallOption) (*Message, error)
-	AddLikeComment(ctx context.Context, in *LikeId, opts ...grpc.CallOption) (*PostListResponse, error)
-	DeleteLikeComment(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Message, error)
-	GetPostLikeCount(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*Message, error)
-	GetCommentLikeCount(ctx context.Context, in *Like, opts ...grpc.CallOption) (*PostListResponse, error)
-	GetUsersWhichLikePost(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*PostListResponse, error)
-	GetUsersWhichLikeComment(ctx context.Context, in *CommentId, opts ...grpc.CallOption) (*PostListResponse, error)
+	AddLikePost(ctx context.Context, in *LikePost, opts ...grpc.CallOption) (*LikeResponse, error)
+	DeleteLikePost(ctx context.Context, in *LikePost, opts ...grpc.CallOption) (*Message, error)
+	AddLikeComment(ctx context.Context, in *LikePost, opts ...grpc.CallOption) (*LikeResponse, error)
+	DeleteLikeComment(ctx context.Context, in *LikePost, opts ...grpc.CallOption) (*Message, error)
+	GetPostLikeCount(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*PostResponse, error)
+	GetMostLikedComment(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*CommentResponse, error)
+	GetUsersWhichLikePost(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*Users, error)
+	GetUsersWhichLikeComment(ctx context.Context, in *CommentId, opts ...grpc.CallOption) (*Users, error)
 	// comments
 	CreateComment(ctx context.Context, in *CommentPost, opts ...grpc.CallOption) (*CommentResponse, error)
 	UpdateComment(ctx context.Context, in *UpdateAComment, opts ...grpc.CallOption) (*CommentResponse, error)
 	GetCommentByID(ctx context.Context, in *CommentId, opts ...grpc.CallOption) (*CommentResponse, error)
-	GetCommentByUsername(ctx context.Context, in *UserPostId, opts ...grpc.CallOption) (*CommentResponse, error)
-	ListComments(ctx context.Context, in *CommentList, opts ...grpc.CallOption) (*Message, error)
+	GetCommentByUsername(ctx context.Context, in *Username, opts ...grpc.CallOption) (*CommentResponse, error)
+	ListComments(ctx context.Context, in *CommentList, opts ...grpc.CallOption) (*CommentsR, error)
 	DeleteComment(ctx context.Context, in *CommentId, opts ...grpc.CallOption) (*Message, error)
-	GetCommentByPostID(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*CommentResponse, error)
-	GetAllUserComments(ctx context.Context, in *CommentId, opts ...grpc.CallOption) (*CommentAllResponse, error)
+	GetCommentByPostID(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*CommentsR, error)
+	GetAllUserComments(ctx context.Context, in *Username, opts ...grpc.CallOption) (*CommentsR, error)
 	GetMostlikeCommentPost(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*CommentResponse, error)
 }
 
@@ -136,7 +138,17 @@ func (c *postServiceClient) DeletePost(ctx context.Context, in *PostId, opts ...
 	return out, nil
 }
 
-func (c *postServiceClient) RemoveImageFromPost(ctx context.Context, in *Post, opts ...grpc.CallOption) (*PostListResponse, error) {
+func (c *postServiceClient) AddImageToPost(ctx context.Context, in *ImageUrl, opts ...grpc.CallOption) (*PostResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PostResponse)
+	err := c.cc.Invoke(ctx, PostService_AddImageToPost_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) RemoveImageFromPost(ctx context.Context, in *ImageUrl, opts ...grpc.CallOption) (*PostListResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PostListResponse)
 	err := c.cc.Invoke(ctx, PostService_RemoveImageFromPost_FullMethodName, in, out, cOpts...)
@@ -156,9 +168,9 @@ func (c *postServiceClient) GetPostByCountry(ctx context.Context, in *PostCountr
 	return out, nil
 }
 
-func (c *postServiceClient) AddLikePost(ctx context.Context, in *LikePost, opts ...grpc.CallOption) (*LikePost, error) {
+func (c *postServiceClient) AddLikePost(ctx context.Context, in *LikePost, opts ...grpc.CallOption) (*LikeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LikePost)
+	out := new(LikeResponse)
 	err := c.cc.Invoke(ctx, PostService_AddLikePost_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -166,7 +178,7 @@ func (c *postServiceClient) AddLikePost(ctx context.Context, in *LikePost, opts 
 	return out, nil
 }
 
-func (c *postServiceClient) DeleteLikePost(ctx context.Context, in *LikeId, opts ...grpc.CallOption) (*Message, error) {
+func (c *postServiceClient) DeleteLikePost(ctx context.Context, in *LikePost, opts ...grpc.CallOption) (*Message, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Message)
 	err := c.cc.Invoke(ctx, PostService_DeleteLikePost_FullMethodName, in, out, cOpts...)
@@ -176,9 +188,9 @@ func (c *postServiceClient) DeleteLikePost(ctx context.Context, in *LikeId, opts
 	return out, nil
 }
 
-func (c *postServiceClient) AddLikeComment(ctx context.Context, in *LikeId, opts ...grpc.CallOption) (*PostListResponse, error) {
+func (c *postServiceClient) AddLikeComment(ctx context.Context, in *LikePost, opts ...grpc.CallOption) (*LikeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PostListResponse)
+	out := new(LikeResponse)
 	err := c.cc.Invoke(ctx, PostService_AddLikeComment_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -186,7 +198,7 @@ func (c *postServiceClient) AddLikeComment(ctx context.Context, in *LikeId, opts
 	return out, nil
 }
 
-func (c *postServiceClient) DeleteLikeComment(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Message, error) {
+func (c *postServiceClient) DeleteLikeComment(ctx context.Context, in *LikePost, opts ...grpc.CallOption) (*Message, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Message)
 	err := c.cc.Invoke(ctx, PostService_DeleteLikeComment_FullMethodName, in, out, cOpts...)
@@ -196,9 +208,9 @@ func (c *postServiceClient) DeleteLikeComment(ctx context.Context, in *UserId, o
 	return out, nil
 }
 
-func (c *postServiceClient) GetPostLikeCount(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*Message, error) {
+func (c *postServiceClient) GetPostLikeCount(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*PostResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Message)
+	out := new(PostResponse)
 	err := c.cc.Invoke(ctx, PostService_GetPostLikeCount_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -206,19 +218,19 @@ func (c *postServiceClient) GetPostLikeCount(ctx context.Context, in *PostId, op
 	return out, nil
 }
 
-func (c *postServiceClient) GetCommentLikeCount(ctx context.Context, in *Like, opts ...grpc.CallOption) (*PostListResponse, error) {
+func (c *postServiceClient) GetMostLikedComment(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*CommentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PostListResponse)
-	err := c.cc.Invoke(ctx, PostService_GetCommentLikeCount_FullMethodName, in, out, cOpts...)
+	out := new(CommentResponse)
+	err := c.cc.Invoke(ctx, PostService_GetMostLikedComment_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *postServiceClient) GetUsersWhichLikePost(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*PostListResponse, error) {
+func (c *postServiceClient) GetUsersWhichLikePost(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*Users, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PostListResponse)
+	out := new(Users)
 	err := c.cc.Invoke(ctx, PostService_GetUsersWhichLikePost_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -226,9 +238,9 @@ func (c *postServiceClient) GetUsersWhichLikePost(ctx context.Context, in *PostI
 	return out, nil
 }
 
-func (c *postServiceClient) GetUsersWhichLikeComment(ctx context.Context, in *CommentId, opts ...grpc.CallOption) (*PostListResponse, error) {
+func (c *postServiceClient) GetUsersWhichLikeComment(ctx context.Context, in *CommentId, opts ...grpc.CallOption) (*Users, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PostListResponse)
+	out := new(Users)
 	err := c.cc.Invoke(ctx, PostService_GetUsersWhichLikeComment_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -266,7 +278,7 @@ func (c *postServiceClient) GetCommentByID(ctx context.Context, in *CommentId, o
 	return out, nil
 }
 
-func (c *postServiceClient) GetCommentByUsername(ctx context.Context, in *UserPostId, opts ...grpc.CallOption) (*CommentResponse, error) {
+func (c *postServiceClient) GetCommentByUsername(ctx context.Context, in *Username, opts ...grpc.CallOption) (*CommentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CommentResponse)
 	err := c.cc.Invoke(ctx, PostService_GetCommentByUsername_FullMethodName, in, out, cOpts...)
@@ -276,9 +288,9 @@ func (c *postServiceClient) GetCommentByUsername(ctx context.Context, in *UserPo
 	return out, nil
 }
 
-func (c *postServiceClient) ListComments(ctx context.Context, in *CommentList, opts ...grpc.CallOption) (*Message, error) {
+func (c *postServiceClient) ListComments(ctx context.Context, in *CommentList, opts ...grpc.CallOption) (*CommentsR, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Message)
+	out := new(CommentsR)
 	err := c.cc.Invoke(ctx, PostService_ListComments_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -296,9 +308,9 @@ func (c *postServiceClient) DeleteComment(ctx context.Context, in *CommentId, op
 	return out, nil
 }
 
-func (c *postServiceClient) GetCommentByPostID(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*CommentResponse, error) {
+func (c *postServiceClient) GetCommentByPostID(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*CommentsR, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CommentResponse)
+	out := new(CommentsR)
 	err := c.cc.Invoke(ctx, PostService_GetCommentByPostID_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -306,9 +318,9 @@ func (c *postServiceClient) GetCommentByPostID(ctx context.Context, in *PostId, 
 	return out, nil
 }
 
-func (c *postServiceClient) GetAllUserComments(ctx context.Context, in *CommentId, opts ...grpc.CallOption) (*CommentAllResponse, error) {
+func (c *postServiceClient) GetAllUserComments(ctx context.Context, in *Username, opts ...grpc.CallOption) (*CommentsR, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CommentAllResponse)
+	out := new(CommentsR)
 	err := c.cc.Invoke(ctx, PostService_GetAllUserComments_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -336,26 +348,27 @@ type PostServiceServer interface {
 	GetPostByID(context.Context, *PostId) (*PostResponse, error)
 	ListPosts(context.Context, *PostList) (*PostListResponse, error)
 	DeletePost(context.Context, *PostId) (*Message, error)
-	RemoveImageFromPost(context.Context, *Post) (*PostListResponse, error)
+	AddImageToPost(context.Context, *ImageUrl) (*PostResponse, error)
+	RemoveImageFromPost(context.Context, *ImageUrl) (*PostListResponse, error)
 	GetPostByCountry(context.Context, *PostCountry) (*PostListResponse, error)
 	// like
-	AddLikePost(context.Context, *LikePost) (*LikePost, error)
-	DeleteLikePost(context.Context, *LikeId) (*Message, error)
-	AddLikeComment(context.Context, *LikeId) (*PostListResponse, error)
-	DeleteLikeComment(context.Context, *UserId) (*Message, error)
-	GetPostLikeCount(context.Context, *PostId) (*Message, error)
-	GetCommentLikeCount(context.Context, *Like) (*PostListResponse, error)
-	GetUsersWhichLikePost(context.Context, *PostId) (*PostListResponse, error)
-	GetUsersWhichLikeComment(context.Context, *CommentId) (*PostListResponse, error)
+	AddLikePost(context.Context, *LikePost) (*LikeResponse, error)
+	DeleteLikePost(context.Context, *LikePost) (*Message, error)
+	AddLikeComment(context.Context, *LikePost) (*LikeResponse, error)
+	DeleteLikeComment(context.Context, *LikePost) (*Message, error)
+	GetPostLikeCount(context.Context, *PostId) (*PostResponse, error)
+	GetMostLikedComment(context.Context, *PostId) (*CommentResponse, error)
+	GetUsersWhichLikePost(context.Context, *PostId) (*Users, error)
+	GetUsersWhichLikeComment(context.Context, *CommentId) (*Users, error)
 	// comments
 	CreateComment(context.Context, *CommentPost) (*CommentResponse, error)
 	UpdateComment(context.Context, *UpdateAComment) (*CommentResponse, error)
 	GetCommentByID(context.Context, *CommentId) (*CommentResponse, error)
-	GetCommentByUsername(context.Context, *UserPostId) (*CommentResponse, error)
-	ListComments(context.Context, *CommentList) (*Message, error)
+	GetCommentByUsername(context.Context, *Username) (*CommentResponse, error)
+	ListComments(context.Context, *CommentList) (*CommentsR, error)
 	DeleteComment(context.Context, *CommentId) (*Message, error)
-	GetCommentByPostID(context.Context, *PostId) (*CommentResponse, error)
-	GetAllUserComments(context.Context, *CommentId) (*CommentAllResponse, error)
+	GetCommentByPostID(context.Context, *PostId) (*CommentsR, error)
+	GetAllUserComments(context.Context, *Username) (*CommentsR, error)
 	GetMostlikeCommentPost(context.Context, *PostId) (*CommentResponse, error)
 	mustEmbedUnimplementedPostServiceServer()
 }
@@ -379,34 +392,37 @@ func (UnimplementedPostServiceServer) ListPosts(context.Context, *PostList) (*Po
 func (UnimplementedPostServiceServer) DeletePost(context.Context, *PostId) (*Message, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePost not implemented")
 }
-func (UnimplementedPostServiceServer) RemoveImageFromPost(context.Context, *Post) (*PostListResponse, error) {
+func (UnimplementedPostServiceServer) AddImageToPost(context.Context, *ImageUrl) (*PostResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddImageToPost not implemented")
+}
+func (UnimplementedPostServiceServer) RemoveImageFromPost(context.Context, *ImageUrl) (*PostListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveImageFromPost not implemented")
 }
 func (UnimplementedPostServiceServer) GetPostByCountry(context.Context, *PostCountry) (*PostListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPostByCountry not implemented")
 }
-func (UnimplementedPostServiceServer) AddLikePost(context.Context, *LikePost) (*LikePost, error) {
+func (UnimplementedPostServiceServer) AddLikePost(context.Context, *LikePost) (*LikeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddLikePost not implemented")
 }
-func (UnimplementedPostServiceServer) DeleteLikePost(context.Context, *LikeId) (*Message, error) {
+func (UnimplementedPostServiceServer) DeleteLikePost(context.Context, *LikePost) (*Message, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteLikePost not implemented")
 }
-func (UnimplementedPostServiceServer) AddLikeComment(context.Context, *LikeId) (*PostListResponse, error) {
+func (UnimplementedPostServiceServer) AddLikeComment(context.Context, *LikePost) (*LikeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddLikeComment not implemented")
 }
-func (UnimplementedPostServiceServer) DeleteLikeComment(context.Context, *UserId) (*Message, error) {
+func (UnimplementedPostServiceServer) DeleteLikeComment(context.Context, *LikePost) (*Message, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteLikeComment not implemented")
 }
-func (UnimplementedPostServiceServer) GetPostLikeCount(context.Context, *PostId) (*Message, error) {
+func (UnimplementedPostServiceServer) GetPostLikeCount(context.Context, *PostId) (*PostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPostLikeCount not implemented")
 }
-func (UnimplementedPostServiceServer) GetCommentLikeCount(context.Context, *Like) (*PostListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetCommentLikeCount not implemented")
+func (UnimplementedPostServiceServer) GetMostLikedComment(context.Context, *PostId) (*CommentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMostLikedComment not implemented")
 }
-func (UnimplementedPostServiceServer) GetUsersWhichLikePost(context.Context, *PostId) (*PostListResponse, error) {
+func (UnimplementedPostServiceServer) GetUsersWhichLikePost(context.Context, *PostId) (*Users, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsersWhichLikePost not implemented")
 }
-func (UnimplementedPostServiceServer) GetUsersWhichLikeComment(context.Context, *CommentId) (*PostListResponse, error) {
+func (UnimplementedPostServiceServer) GetUsersWhichLikeComment(context.Context, *CommentId) (*Users, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsersWhichLikeComment not implemented")
 }
 func (UnimplementedPostServiceServer) CreateComment(context.Context, *CommentPost) (*CommentResponse, error) {
@@ -418,19 +434,19 @@ func (UnimplementedPostServiceServer) UpdateComment(context.Context, *UpdateACom
 func (UnimplementedPostServiceServer) GetCommentByID(context.Context, *CommentId) (*CommentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCommentByID not implemented")
 }
-func (UnimplementedPostServiceServer) GetCommentByUsername(context.Context, *UserPostId) (*CommentResponse, error) {
+func (UnimplementedPostServiceServer) GetCommentByUsername(context.Context, *Username) (*CommentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCommentByUsername not implemented")
 }
-func (UnimplementedPostServiceServer) ListComments(context.Context, *CommentList) (*Message, error) {
+func (UnimplementedPostServiceServer) ListComments(context.Context, *CommentList) (*CommentsR, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListComments not implemented")
 }
 func (UnimplementedPostServiceServer) DeleteComment(context.Context, *CommentId) (*Message, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteComment not implemented")
 }
-func (UnimplementedPostServiceServer) GetCommentByPostID(context.Context, *PostId) (*CommentResponse, error) {
+func (UnimplementedPostServiceServer) GetCommentByPostID(context.Context, *PostId) (*CommentsR, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCommentByPostID not implemented")
 }
-func (UnimplementedPostServiceServer) GetAllUserComments(context.Context, *CommentId) (*CommentAllResponse, error) {
+func (UnimplementedPostServiceServer) GetAllUserComments(context.Context, *Username) (*CommentsR, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllUserComments not implemented")
 }
 func (UnimplementedPostServiceServer) GetMostlikeCommentPost(context.Context, *PostId) (*CommentResponse, error) {
@@ -539,8 +555,26 @@ func _PostService_DeletePost_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_AddImageToPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ImageUrl)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).AddImageToPost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_AddImageToPost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).AddImageToPost(ctx, req.(*ImageUrl))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PostService_RemoveImageFromPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Post)
+	in := new(ImageUrl)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -552,7 +586,7 @@ func _PostService_RemoveImageFromPost_Handler(srv interface{}, ctx context.Conte
 		FullMethod: PostService_RemoveImageFromPost_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostServiceServer).RemoveImageFromPost(ctx, req.(*Post))
+		return srv.(PostServiceServer).RemoveImageFromPost(ctx, req.(*ImageUrl))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -594,7 +628,7 @@ func _PostService_AddLikePost_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _PostService_DeleteLikePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LikeId)
+	in := new(LikePost)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -606,13 +640,13 @@ func _PostService_DeleteLikePost_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: PostService_DeleteLikePost_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostServiceServer).DeleteLikePost(ctx, req.(*LikeId))
+		return srv.(PostServiceServer).DeleteLikePost(ctx, req.(*LikePost))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _PostService_AddLikeComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LikeId)
+	in := new(LikePost)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -624,13 +658,13 @@ func _PostService_AddLikeComment_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: PostService_AddLikeComment_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostServiceServer).AddLikeComment(ctx, req.(*LikeId))
+		return srv.(PostServiceServer).AddLikeComment(ctx, req.(*LikePost))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _PostService_DeleteLikeComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserId)
+	in := new(LikePost)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -642,7 +676,7 @@ func _PostService_DeleteLikeComment_Handler(srv interface{}, ctx context.Context
 		FullMethod: PostService_DeleteLikeComment_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostServiceServer).DeleteLikeComment(ctx, req.(*UserId))
+		return srv.(PostServiceServer).DeleteLikeComment(ctx, req.(*LikePost))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -665,20 +699,20 @@ func _PostService_GetPostLikeCount_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PostService_GetCommentLikeCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Like)
+func _PostService_GetMostLikedComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PostId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PostServiceServer).GetCommentLikeCount(ctx, in)
+		return srv.(PostServiceServer).GetMostLikedComment(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: PostService_GetCommentLikeCount_FullMethodName,
+		FullMethod: PostService_GetMostLikedComment_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostServiceServer).GetCommentLikeCount(ctx, req.(*Like))
+		return srv.(PostServiceServer).GetMostLikedComment(ctx, req.(*PostId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -774,7 +808,7 @@ func _PostService_GetCommentByID_Handler(srv interface{}, ctx context.Context, d
 }
 
 func _PostService_GetCommentByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserPostId)
+	in := new(Username)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -786,7 +820,7 @@ func _PostService_GetCommentByUsername_Handler(srv interface{}, ctx context.Cont
 		FullMethod: PostService_GetCommentByUsername_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostServiceServer).GetCommentByUsername(ctx, req.(*UserPostId))
+		return srv.(PostServiceServer).GetCommentByUsername(ctx, req.(*Username))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -846,7 +880,7 @@ func _PostService_GetCommentByPostID_Handler(srv interface{}, ctx context.Contex
 }
 
 func _PostService_GetAllUserComments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CommentId)
+	in := new(Username)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -858,7 +892,7 @@ func _PostService_GetAllUserComments_Handler(srv interface{}, ctx context.Contex
 		FullMethod: PostService_GetAllUserComments_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostServiceServer).GetAllUserComments(ctx, req.(*CommentId))
+		return srv.(PostServiceServer).GetAllUserComments(ctx, req.(*Username))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -909,6 +943,10 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PostService_DeletePost_Handler,
 		},
 		{
+			MethodName: "AddImageToPost",
+			Handler:    _PostService_AddImageToPost_Handler,
+		},
+		{
 			MethodName: "RemoveImageFromPost",
 			Handler:    _PostService_RemoveImageFromPost_Handler,
 		},
@@ -937,8 +975,8 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PostService_GetPostLikeCount_Handler,
 		},
 		{
-			MethodName: "GetCommentLikeCount",
-			Handler:    _PostService_GetCommentLikeCount_Handler,
+			MethodName: "GetMostLikedComment",
+			Handler:    _PostService_GetMostLikedComment_Handler,
 		},
 		{
 			MethodName: "GetUsersWhichLikePost",
