@@ -1,9 +1,12 @@
 package postgres
 
 import (
+	"context"
 	"database/sql"
+	"fmt"
 	pb "post-servic/genproto/post"
 	"post-servic/storage"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -44,19 +47,37 @@ func (c *CommentStorage) CreateComment(in *pb.CommentPost) (*pb.CommentResponse,
 }
 
 func (c *CommentStorage) UpdateComment(in *pb.UpdateAComment) (*pb.CommentResponse, error) {
-	updatedAt := time.Now()
+	query := `UPDATE comments SET `
+	args := []interface{}{}
+	argIndex := 1
+	updateFields := []string{}
 
-	query := `
-		UPDATE comments 
-		SET content = $1, updated_at = $2 
-		WHERE id = $3 RETURNING id, user_id, post_id, content, created_at, updated_at`
+	if in.Content != "" {
+		updateFields = append(updateFields, fmt.Sprintf("content = $%d", argIndex))
+		args = append(args, in.Content)
+		argIndex++
+	}
 
-	var comment pb.CommentResponse
-	if err := c.db.QueryRow(query, in.Content, updatedAt, in.Id).Scan(&comment.Id, &comment.UserId, &comment.PostId, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt); err != nil {
+	if len(updateFields) > 0 {
+		query += fmt.Sprintf("%s, updated_at = $%d", strings.Join(updateFields, ", "), argIndex)
+		args = append(args, time.Now())
+		argIndex++
+	} else {
+		return nil, fmt.Errorf("hech qanday maydon yangilanmadi")
+	}
+
+	query += fmt.Sprintf(" WHERE id = $%d AND user_id = $%d RETURNING id, user_id, post_id, content, created_at, updated_at", argIndex, argIndex+1)
+	args = append(args, in.Id, in.UserId)
+
+	var res pb.CommentResponse
+	err := c.db.QueryRowContext(context.Background(), query, args...).Scan(
+		&res.Id, &res.UserId, &res.PostId, &res.Content, &res.CreatedAt, &res.UpdatedAt)
+
+	if err != nil {
 		return nil, err
 	}
 
-	return &comment, nil
+	return &res, nil
 }
 
 func (c *CommentStorage) GetCommentByID(in *pb.CommentId) (*pb.CommentResponse, error) {
@@ -92,13 +113,38 @@ func (c *CommentStorage) GetCommentByUsername(in *pb.Username) (*pb.CommentRespo
 }
 
 func (c *CommentStorage) ListComments(in *pb.CommentList) (*pb.CommentsR, error) {
-	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE post_id = $1 LIMIT $2 OFFSET $3`
-	rows, err := c.db.Query(query, in.PostId, in.Limit, in.Offset)
+	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE 1=1`
+	args := []interface{}{}
+	argIndex := 1
+
+	// Dinamik filtrlar
+	if in.PostId != "" {
+		query += fmt.Sprintf(" AND post_id = $%d", argIndex)
+		args = append(args, in.PostId)
+		argIndex++
+	}
+
+	// Limit va Offset qo'shish
+	if in.Limit > 0 {
+		query += fmt.Sprintf(" LIMIT $%d", argIndex)
+		args = append(args, in.Limit)
+		argIndex++
+	}
+
+	if in.Offset >= 0 {
+		query += fmt.Sprintf(" OFFSET $%d", argIndex)
+		args = append(args, in.Offset)
+		argIndex++
+	}
+
+	// So'rov bajarish
+	rows, err := c.db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
+	// Natijalarni olish
 	var comments []*pb.CommentResponse
 	for rows.Next() {
 		var comment pb.CommentResponse
@@ -110,6 +156,7 @@ func (c *CommentStorage) ListComments(in *pb.CommentList) (*pb.CommentsR, error)
 
 	return &pb.CommentsR{Comments: comments}, nil
 }
+
 
 func (c *CommentStorage) GetCommentByPostID(in *pb.PostId) (*pb.CommentsR, error) {
 	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE post_id = $1`
@@ -155,9 +202,9 @@ func (c *CommentStorage) GetMostlikeCommentPost(in *pb.PostId) (*pb.CommentRespo
 	query := `
 		SELECT c.id, c.user_id, c.post_id, c.content, c.created_at, c.updated_at, COUNT(l.user_id) as like_count
 		FROM comments c
-		LEFT JOIN likes l ON c.id = l.comment_id
+		LEFT JOIN likes l ON c.id = l.comment_id -- to'g'ri bog'lanish comment_id bilan
 		WHERE c.post_id = $1
-		GROUP BY c.id
+		GROUP BY c.id, c.user_id, c.post_id, c.content, c.created_at, c.updated_at
 		ORDER BY like_count DESC
 		LIMIT 1`
 
@@ -180,3 +227,4 @@ func (c *CommentStorage) GetMostlikeCommentPost(in *pb.PostId) (*pb.CommentRespo
 
 	return &comment, nil
 }
+
