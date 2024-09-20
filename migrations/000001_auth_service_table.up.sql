@@ -1,4 +1,5 @@
-CREATE TYPE country AS ENUM('Azerbaijan', 'Kazakhstan', 'Kyrgyzstan', 'Turkey', 'Uzbekistan');
+CREATE TYPE country AS ENUM ('Azerbaijan', 'Kazakhstan', 'Kyrgyzstan', 'Turkey', 'Uzbekistan');
+CREATE TYPE content AS ENUM ('text', 'post', 'photo', 'video');
 
 CREATE TABLE IF NOT EXISTS hashtag
 (
@@ -9,19 +10,19 @@ CREATE TABLE IF NOT EXISTS hashtag
 
 CREATE TABLE IF NOT EXISTS countries
 (
-    id           UUID DEFAULT gen_random_uuid(),
-    city_name    VARCHAR UNIQUE ,
-    country      country,
-    nationality  VARCHAR PRIMARY KEY,
-    flag         VARCHAR
+    id          UUID DEFAULT gen_random_uuid(),
+    city_name   VARCHAR UNIQUE,
+    country     country,
+    nationality VARCHAR PRIMARY KEY,
+    flag        VARCHAR
 );
 
 
 CREATE TABLE IF NOT EXISTS posts
 (
     id          UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
-    user_id    UUID    NOT NULL,
-    nationality VARCHAR REFERENCES countries(nationality),
+    user_id     UUID    NOT NULL,
+    nationality VARCHAR REFERENCES countries (nationality),
     location    VARCHAR NOT NULL,
     title       VARCHAR NOT NULL,
     hashtag     VARCHAR REFERENCES hashtag (name),
@@ -35,7 +36,7 @@ CREATE TABLE IF NOT EXISTS posts
 CREATE TABLE IF NOT EXISTS comments
 (
     id         UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
-    user_id   UUID NOT NULL,
+    user_id    UUID NOT NULL,
     post_id    UUID REFERENCES posts (id) ON DELETE CASCADE,
     content    TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
@@ -45,8 +46,31 @@ CREATE TABLE IF NOT EXISTS comments
 
 CREATE TABLE IF NOT EXISTS likes
 (
-    user_id    UUID NOT NULL ,
+    user_id    UUID NOT NULL,
     post_id    UUID REFERENCES posts (id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     UNIQUE (user_id, post_id)
+);
+
+
+-- ------------------- table for chat ------------------------------
+
+CREATE TABLE IF NOT EXISTS chat
+(
+    id         UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
+    user1_id   UUID NOT NULL,
+    user2_id   UUID NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE messages
+(
+    id              UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
+    chat_id uuid REFERENCES chat (id) ON DELETE CASCADE,
+    sender_id       UUID,
+    content_type    content,
+    content         TEXT NOT NULL,
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_aut     TIMESTAMP WITH TIME ZONE,
+    is_read         BOOLEAN                  DEFAULT FALSE
 );
