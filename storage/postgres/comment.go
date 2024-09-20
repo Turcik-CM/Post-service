@@ -157,7 +157,6 @@ func (c *CommentStorage) ListComments(in *pb.CommentList) (*pb.CommentsR, error)
 	return &pb.CommentsR{Comments: comments}, nil
 }
 
-
 func (c *CommentStorage) GetCommentByPostID(in *pb.PostId) (*pb.CommentsR, error) {
 	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE post_id = $1`
 	rows, err := c.db.Query(query, in.Id)
@@ -200,9 +199,9 @@ func (c *CommentStorage) GetAllUserComments(in *pb.Username) (*pb.CommentsR, err
 
 func (c *CommentStorage) GetMostlikeCommentPost(in *pb.PostId) (*pb.CommentResponse, error) {
 	query := `
-		SELECT c.id, c.user_id, c.post_id, c.content, c.created_at, c.updated_at, COUNT(l.user_id) as like_count
+		SELECT c.id, c.user_id, c.post_id, c.content, c.created_at, c.updated_at as like_count
 		FROM comments c
-		LEFT JOIN likes l ON c.id = l.comment_id -- to'g'ri bog'lanish comment_id bilan
+		LEFT JOIN likes l ON c.user_id = l.user_id -- to'g'ri bog'lanish comment_id bilan
 		WHERE c.post_id = $1
 		GROUP BY c.id, c.user_id, c.post_id, c.content, c.created_at, c.updated_at
 		ORDER BY like_count DESC
@@ -227,4 +226,3 @@ func (c *CommentStorage) GetMostlikeCommentPost(in *pb.PostId) (*pb.CommentRespo
 
 	return &comment, nil
 }
-

@@ -42,8 +42,8 @@ func TestUpdateComment(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.UpdateAComment{
-		UserId:  "09579a78-e86e-4eed-ae80-6e378fe539db",
-		Id:      "94eda20d-7a75-4cdd-9a2d-ca4c97089626",
+		UserId:  "43cd2da3-02bb-402b-872b-1f7a50a8a030",
+		Id:      "f78fa63b-20d8-4adc-b9e3-d3c26f6cf8ee",
 		Content: "dddd",
 	}
 	comment := NewCommentStorage(db)
@@ -88,6 +88,23 @@ func TestDeleteComment(t *testing.T) {
 	fmt.Println(req)
 }
 
+func TestGetAllUserComments(t *testing.T) {
+	cfg := config.Load()
+	db, err := ConnectPostgres(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	res := pb.Username{
+		Username: "5cb6e285-050b-42ed-b1dd-6bf549a14d6e",
+	}
+	comment := NewCommentStorage(db)
+	req, err := comment.GetAllUserComments(&res)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(req)
+}
+
 func TestGetCommentByUsername(t *testing.T) {
 	cfg := config.Load()
 	db, err := ConnectPostgres(cfg)
@@ -116,7 +133,7 @@ func TestListComments(t *testing.T) {
 	res := pb.CommentList{
 		PostId: "ff3c798c-fa32-41d6-88e0-dcf5287aa5b2",
 		Limit:  1,
-		Offset: 0,
+		//Offset: 0,
 	}
 	comment := NewCommentStorage(db)
 	req, err := comment.ListComments(&res)
