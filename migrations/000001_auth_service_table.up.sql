@@ -60,7 +60,8 @@ CREATE TABLE IF NOT EXISTS chat
     id         UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
     user1_id   UUID NOT NULL,
     user2_id   UUID NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    deleted_at BIGINT                   DEFAULT 0
 );
 
 CREATE TABLE messages
@@ -68,9 +69,10 @@ CREATE TABLE messages
     id              UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
     chat_id uuid REFERENCES chat (id) ON DELETE CASCADE,
     sender_id       UUID,
-    content_type    content,
+    content_type    content NOT NULL,
     content         TEXT NOT NULL,
     created_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_aut     TIMESTAMP WITH TIME ZONE,
-    is_read         BOOLEAN                  DEFAULT FALSE
+    is_read         BOOLEAN                  DEFAULT FALSE,
+    deleted_at BIGINT                   DEFAULT 0
 );

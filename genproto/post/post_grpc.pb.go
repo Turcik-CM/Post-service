@@ -44,6 +44,16 @@ const (
 	PostService_GetCommentByPostID_FullMethodName       = "/post.PostService/GetCommentByPostID"
 	PostService_GetAllUserComments_FullMethodName       = "/post.PostService/GetAllUserComments"
 	PostService_GetMostlikeCommentPost_FullMethodName   = "/post.PostService/GetMostlikeCommentPost"
+	PostService_StartMessaging_FullMethodName           = "/post.PostService/StartMessaging"
+	PostService_SendMessage_FullMethodName              = "/post.PostService/SendMessage"
+	PostService_GetChatMessages_FullMethodName          = "/post.PostService/GetChatMessages"
+	PostService_MessageMarcTrue_FullMethodName          = "/post.PostService/MessageMarcTrue"
+	PostService_GetUserChats_FullMethodName             = "/post.PostService/GetUserChats"
+	PostService_GetUnreadMessages_FullMethodName        = "/post.PostService/GetUnreadMessages"
+	PostService_UpdateMessage_FullMethodName            = "/post.PostService/UpdateMessage"
+	PostService_GetTodayMessages_FullMethodName         = "/post.PostService/GetTodayMessages"
+	PostService_DeleteMessage_FullMethodName            = "/post.PostService/DeleteMessage"
+	PostService_DeleteChat_FullMethodName               = "/post.PostService/DeleteChat"
 )
 
 // PostServiceClient is the client API for PostService service.
@@ -78,6 +88,17 @@ type PostServiceClient interface {
 	GetCommentByPostID(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*CommentsR, error)
 	GetAllUserComments(ctx context.Context, in *Username, opts ...grpc.CallOption) (*CommentsR, error)
 	GetMostlikeCommentPost(ctx context.Context, in *PostId, opts ...grpc.CallOption) (*CommentResponse, error)
+	// chat
+	StartMessaging(ctx context.Context, in *CreateChat, opts ...grpc.CallOption) (*ChatResponse, error)
+	SendMessage(ctx context.Context, in *CreateMassage, opts ...grpc.CallOption) (*MassageResponse, error)
+	GetChatMessages(ctx context.Context, in *List, opts ...grpc.CallOption) (*MassageResponseList, error)
+	MessageMarcTrue(ctx context.Context, in *MassageTrue, opts ...grpc.CallOption) (*Message, error)
+	GetUserChats(ctx context.Context, in *Username, opts ...grpc.CallOption) (*ChatResponseList, error)
+	GetUnreadMessages(ctx context.Context, in *ChatId, opts ...grpc.CallOption) (*MassageResponseList, error)
+	UpdateMessage(ctx context.Context, in *UpdateMs, opts ...grpc.CallOption) (*MassageResponse, error)
+	GetTodayMessages(ctx context.Context, in *ChatId, opts ...grpc.CallOption) (*MassageResponseList, error)
+	DeleteMessage(ctx context.Context, in *MassageId, opts ...grpc.CallOption) (*Message, error)
+	DeleteChat(ctx context.Context, in *ChatId, opts ...grpc.CallOption) (*Message, error)
 }
 
 type postServiceClient struct {
@@ -338,6 +359,106 @@ func (c *postServiceClient) GetMostlikeCommentPost(ctx context.Context, in *Post
 	return out, nil
 }
 
+func (c *postServiceClient) StartMessaging(ctx context.Context, in *CreateChat, opts ...grpc.CallOption) (*ChatResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ChatResponse)
+	err := c.cc.Invoke(ctx, PostService_StartMessaging_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) SendMessage(ctx context.Context, in *CreateMassage, opts ...grpc.CallOption) (*MassageResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MassageResponse)
+	err := c.cc.Invoke(ctx, PostService_SendMessage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) GetChatMessages(ctx context.Context, in *List, opts ...grpc.CallOption) (*MassageResponseList, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MassageResponseList)
+	err := c.cc.Invoke(ctx, PostService_GetChatMessages_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) MessageMarcTrue(ctx context.Context, in *MassageTrue, opts ...grpc.CallOption) (*Message, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Message)
+	err := c.cc.Invoke(ctx, PostService_MessageMarcTrue_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) GetUserChats(ctx context.Context, in *Username, opts ...grpc.CallOption) (*ChatResponseList, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ChatResponseList)
+	err := c.cc.Invoke(ctx, PostService_GetUserChats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) GetUnreadMessages(ctx context.Context, in *ChatId, opts ...grpc.CallOption) (*MassageResponseList, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MassageResponseList)
+	err := c.cc.Invoke(ctx, PostService_GetUnreadMessages_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) UpdateMessage(ctx context.Context, in *UpdateMs, opts ...grpc.CallOption) (*MassageResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MassageResponse)
+	err := c.cc.Invoke(ctx, PostService_UpdateMessage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) GetTodayMessages(ctx context.Context, in *ChatId, opts ...grpc.CallOption) (*MassageResponseList, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MassageResponseList)
+	err := c.cc.Invoke(ctx, PostService_GetTodayMessages_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) DeleteMessage(ctx context.Context, in *MassageId, opts ...grpc.CallOption) (*Message, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Message)
+	err := c.cc.Invoke(ctx, PostService_DeleteMessage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) DeleteChat(ctx context.Context, in *ChatId, opts ...grpc.CallOption) (*Message, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Message)
+	err := c.cc.Invoke(ctx, PostService_DeleteChat_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostServiceServer is the server API for PostService service.
 // All implementations must embed UnimplementedPostServiceServer
 // for forward compatibility
@@ -370,6 +491,17 @@ type PostServiceServer interface {
 	GetCommentByPostID(context.Context, *PostId) (*CommentsR, error)
 	GetAllUserComments(context.Context, *Username) (*CommentsR, error)
 	GetMostlikeCommentPost(context.Context, *PostId) (*CommentResponse, error)
+	// chat
+	StartMessaging(context.Context, *CreateChat) (*ChatResponse, error)
+	SendMessage(context.Context, *CreateMassage) (*MassageResponse, error)
+	GetChatMessages(context.Context, *List) (*MassageResponseList, error)
+	MessageMarcTrue(context.Context, *MassageTrue) (*Message, error)
+	GetUserChats(context.Context, *Username) (*ChatResponseList, error)
+	GetUnreadMessages(context.Context, *ChatId) (*MassageResponseList, error)
+	UpdateMessage(context.Context, *UpdateMs) (*MassageResponse, error)
+	GetTodayMessages(context.Context, *ChatId) (*MassageResponseList, error)
+	DeleteMessage(context.Context, *MassageId) (*Message, error)
+	DeleteChat(context.Context, *ChatId) (*Message, error)
 	mustEmbedUnimplementedPostServiceServer()
 }
 
@@ -451,6 +583,36 @@ func (UnimplementedPostServiceServer) GetAllUserComments(context.Context, *Usern
 }
 func (UnimplementedPostServiceServer) GetMostlikeCommentPost(context.Context, *PostId) (*CommentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMostlikeCommentPost not implemented")
+}
+func (UnimplementedPostServiceServer) StartMessaging(context.Context, *CreateChat) (*ChatResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartMessaging not implemented")
+}
+func (UnimplementedPostServiceServer) SendMessage(context.Context, *CreateMassage) (*MassageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendMessage not implemented")
+}
+func (UnimplementedPostServiceServer) GetChatMessages(context.Context, *List) (*MassageResponseList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetChatMessages not implemented")
+}
+func (UnimplementedPostServiceServer) MessageMarcTrue(context.Context, *MassageTrue) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessageMarcTrue not implemented")
+}
+func (UnimplementedPostServiceServer) GetUserChats(context.Context, *Username) (*ChatResponseList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserChats not implemented")
+}
+func (UnimplementedPostServiceServer) GetUnreadMessages(context.Context, *ChatId) (*MassageResponseList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUnreadMessages not implemented")
+}
+func (UnimplementedPostServiceServer) UpdateMessage(context.Context, *UpdateMs) (*MassageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMessage not implemented")
+}
+func (UnimplementedPostServiceServer) GetTodayMessages(context.Context, *ChatId) (*MassageResponseList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTodayMessages not implemented")
+}
+func (UnimplementedPostServiceServer) DeleteMessage(context.Context, *MassageId) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteMessage not implemented")
+}
+func (UnimplementedPostServiceServer) DeleteChat(context.Context, *ChatId) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteChat not implemented")
 }
 func (UnimplementedPostServiceServer) mustEmbedUnimplementedPostServiceServer() {}
 
@@ -915,6 +1077,186 @@ func _PostService_GetMostlikeCommentPost_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_StartMessaging_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateChat)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).StartMessaging(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_StartMessaging_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).StartMessaging(ctx, req.(*CreateChat))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_SendMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMassage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).SendMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_SendMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).SendMessage(ctx, req.(*CreateMassage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_GetChatMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(List)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).GetChatMessages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_GetChatMessages_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).GetChatMessages(ctx, req.(*List))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_MessageMarcTrue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MassageTrue)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).MessageMarcTrue(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_MessageMarcTrue_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).MessageMarcTrue(ctx, req.(*MassageTrue))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_GetUserChats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Username)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).GetUserChats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_GetUserChats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).GetUserChats(ctx, req.(*Username))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_GetUnreadMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChatId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).GetUnreadMessages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_GetUnreadMessages_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).GetUnreadMessages(ctx, req.(*ChatId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_UpdateMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).UpdateMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_UpdateMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).UpdateMessage(ctx, req.(*UpdateMs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_GetTodayMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChatId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).GetTodayMessages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_GetTodayMessages_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).GetTodayMessages(ctx, req.(*ChatId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_DeleteMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MassageId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).DeleteMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_DeleteMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).DeleteMessage(ctx, req.(*MassageId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_DeleteChat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChatId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).DeleteChat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_DeleteChat_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).DeleteChat(ctx, req.(*ChatId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1021,6 +1363,46 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMostlikeCommentPost",
 			Handler:    _PostService_GetMostlikeCommentPost_Handler,
+		},
+		{
+			MethodName: "StartMessaging",
+			Handler:    _PostService_StartMessaging_Handler,
+		},
+		{
+			MethodName: "SendMessage",
+			Handler:    _PostService_SendMessage_Handler,
+		},
+		{
+			MethodName: "GetChatMessages",
+			Handler:    _PostService_GetChatMessages_Handler,
+		},
+		{
+			MethodName: "MessageMarcTrue",
+			Handler:    _PostService_MessageMarcTrue_Handler,
+		},
+		{
+			MethodName: "GetUserChats",
+			Handler:    _PostService_GetUserChats_Handler,
+		},
+		{
+			MethodName: "GetUnreadMessages",
+			Handler:    _PostService_GetUnreadMessages_Handler,
+		},
+		{
+			MethodName: "UpdateMessage",
+			Handler:    _PostService_UpdateMessage_Handler,
+		},
+		{
+			MethodName: "GetTodayMessages",
+			Handler:    _PostService_GetTodayMessages_Handler,
+		},
+		{
+			MethodName: "DeleteMessage",
+			Handler:    _PostService_DeleteMessage_Handler,
+		},
+		{
+			MethodName: "DeleteChat",
+			Handler:    _PostService_DeleteChat_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -37,3 +37,16 @@ type CommentStorage interface {
 	GetAllUserComments(in *pb.Username) (*pb.CommentsR, error)
 	GetMostlikeCommentPost(in *pb.PostId) (*pb.CommentResponse, error)
 }
+
+type ChatStorage interface {
+	StartMessaging(in *pb.CreateChat) (*pb.ChatResponse, error)
+	SendMessage(in *pb.CreateMassage) (*pb.MassageResponse, error)
+	GetChatMessages(in *pb.List) (*pb.MassageResponseList, error)
+	MessageMarcTrue(in *pb.MassageTrue) (*pb.Message, error)
+	GetUserChats(in *pb.Username) (*pb.ChatResponseList, error)
+	GetUnreadMessages(in *pb.ChatId) (*pb.MassageResponseList, error)
+	UpdateMessage(in *pb.UpdateMs) (*pb.MassageResponse, error)
+	GetTodayMessages(in *pb.ChatId) (*pb.MassageResponseList, error)
+	DeleteMessage(in *pb.MassageId) (*pb.Message, error)
+	DeleteChat(in *pb.ChatId) (*pb.Message, error)
+}
