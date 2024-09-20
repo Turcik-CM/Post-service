@@ -70,7 +70,6 @@ func (c *CommentStorage) GetCommentByID(in *pb.CommentId) (*pb.CommentResponse, 
 	return &comment, nil
 }
 
-// DeleteComment - izohni o'chirish
 func (c *CommentStorage) DeleteComment(in *pb.CommentId) (*pb.Message, error) {
 	query := `DELETE FROM comments WHERE id = $1`
 
