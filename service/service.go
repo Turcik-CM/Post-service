@@ -14,10 +14,11 @@ type PostService struct {
 	pb.UnimplementedPostServiceServer
 }
 
-func NewPostService(ps storage.PostStorage, ls storage.LikeStorage, cs storage.CommentStorage) *PostService {
+func NewPostService(ps storage.PostStorage, ls storage.LikeStorage, cs storage.CommentStorage, log *slog.Logger) *PostService {
 	return &PostService{
 		post:    ps,
 		like:    ls,
 		comment: cs,
+		logger:  *log,
 	}
 }
