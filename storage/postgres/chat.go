@@ -40,7 +40,7 @@ func (c *ChatStorage) StartMessaging(in *pb.CreateChat) (*pb.ChatResponse, error
 
 func (c *ChatStorage) SendMessage(in *pb.CreateMassage) (*pb.MassageResponse, error) {
 	query := `INSERT INTO messages (chat_id, sender_id, content_type, content, created_at) 
-	          VALUES ($1, $2, $3, $4) 
+	          VALUES ($1, $2, $3, $4, $5) 
 	          RETURNING id, chat_id, sender_id, content_type, content, created_at`
 
 	var res pb.MassageResponse
@@ -60,7 +60,7 @@ func (c *ChatStorage) SendMessage(in *pb.CreateMassage) (*pb.MassageResponse, er
 }
 
 func (c *ChatStorage) GetChatMessages(in *pb.List) (*pb.MassageResponseList, error) {
-	query := "SELECT id, chat_id, sender_id, content_type, content, created_at, updated_aut, is_read FROM messages WHERE deleted_at = 0"
+	query := "SELECT id, chat_id, sender_id, content_type, content, created_at, is_read FROM messages WHERE deleted_at = 0"
 	args := []interface{}{}
 
 	if in.Limit > 0 {
@@ -82,7 +82,7 @@ func (c *ChatStorage) GetChatMessages(in *pb.List) (*pb.MassageResponseList, err
 	for rows.Next() {
 		var massage pb.MassageResponse
 		if err := rows.Scan(&massage.Id, &massage.ChatId, &massage.SenderId, &massage.ContentType, &massage.Content,
-			&massage.CreatedAt, &massage.UpdatedAt, &massage.IsRead); err != nil {
+			&massage.CreatedAt, &massage.IsRead); err != nil {
 			return nil, err
 		}
 		massages = append(massages, &massage)
@@ -94,9 +94,9 @@ func (c *ChatStorage) GetChatMessages(in *pb.List) (*pb.MassageResponseList, err
 }
 
 func (c *ChatStorage) MessageMarcTrue(in *pb.MassageTrue) (*pb.Message, error) {
-	query := `UPDATE posts SET is_read = $1 WHERE id = $2 RETURNING id`
+	query := `UPDATE messages SET is_read = $1 WHERE chat_id = $2 RETURNING id`
 
-	var postId int64
+	var postId string
 	err := c.db.QueryRowContext(context.Background(), query, true, in.ChatId).Scan(&postId)
 	if err != nil {
 		return nil, err
@@ -108,7 +108,7 @@ func (c *ChatStorage) MessageMarcTrue(in *pb.MassageTrue) (*pb.Message, error) {
 }
 
 func (c *ChatStorage) GetUserChats(in *pb.Username) (*pb.ChatResponseList, error) {
-	query := `SELECT id, user1_id, user2_id FROM chats WHERE user_id = $1 ORDER BY created_at DESC`
+	query := `SELECT id, user1_id, user2_id FROM chat WHERE id = $1 ORDER BY created_at DESC`
 
 	rows, err := c.db.QueryContext(context.Background(), query, in.Username)
 	if err != nil {
@@ -179,7 +179,7 @@ func (c *ChatStorage) UpdateMessage(in *pb.UpdateMs) (*pb.MassageResponse, error
 
 	query1 := `UPDATE messages SET content = $1 WHERE id = $2 RETURNING id, chat_id, sender_id, content_type, content, created_at`
 
-	err = c.db.QueryRowContext(context.Background(), query1, true, in.MessageId).Scan(&res.Id, &res.ChatId, &res.SenderId,
+	err = c.db.QueryRowContext(context.Background(), query1, in.Text, in.MessageId).Scan(&res.Id, &res.ChatId, &res.SenderId,
 		&res.ContentType, &res.Content, &res.CreatedAt)
 	if err != nil {
 		return nil, err

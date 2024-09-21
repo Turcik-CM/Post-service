@@ -25,8 +25,9 @@ func main() {
 	postSt := postgres.NewPostStorage(db)
 	likeSt := postgres.NewLikeStorage(db)
 	commentSt := postgres.NewCommentStorage(db)
+	chatST := postgres.NewChatStorage(db)
 
-	postSR := service.NewPostService(postSt, likeSt, commentSt, logger)
+	postSR := service.NewPostService(chatST, postSt, likeSt, commentSt, logger)
 
 	listen, err := net.Listen("tcp", cfg.POST_SERVICE)
 	fmt.Println("Listening on " + cfg.POST_SERVICE)
