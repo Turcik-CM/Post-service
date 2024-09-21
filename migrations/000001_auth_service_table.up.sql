@@ -1,4 +1,3 @@
-CREATE TYPE country AS ENUM ('Azerbaijan', 'Kazakhstan', 'Kyrgyzstan', 'Turkey', 'Uzbekistan');
 CREATE TYPE content AS ENUM ('text', 'post', 'photo', 'video');
 
 CREATE TABLE IF NOT EXISTS hashtag
@@ -11,8 +10,7 @@ CREATE TABLE IF NOT EXISTS hashtag
 CREATE TABLE IF NOT EXISTS countries
 (
     id          UUID DEFAULT gen_random_uuid(),
-    city_name   VARCHAR UNIQUE,
-    country     country,
+    country     VARCHAR,
     nationality VARCHAR PRIMARY KEY,
     flag        VARCHAR
 );
