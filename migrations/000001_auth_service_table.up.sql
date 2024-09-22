@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS posts
     nationality VARCHAR REFERENCES countries (nationality),
     location    VARCHAR NOT NULL,
     title       VARCHAR NOT NULL,
+    description VARCHAR NOT NULL,
     hashtag     VARCHAR REFERENCES hashtag (name),
     content     TEXT,
     image_url   VARCHAR                  DEFAULT 'no image',

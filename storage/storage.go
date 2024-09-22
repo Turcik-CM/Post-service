@@ -50,3 +50,10 @@ type ChatStorage interface {
 	DeleteMessage(in *pb.MassageId) (*pb.Message, error)
 	DeleteChat(in *pb.ChatId) (*pb.Message, error)
 }
+
+type BasicAdditional interface {
+	GetUserRecommendation(in *pb.Username) (*pb.PostListResponse, error)
+	GetPostsByUsername(in *pb.Username) (*pb.PostListResponse, error)
+	GetTrendsPost(in *pb.Void) (*pb.PostListResponse, error)
+	SearchPost(in *pb.Search) (*pb.PostListResponse, error)
+}

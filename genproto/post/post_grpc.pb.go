@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.4.0
 // - protoc             v4.25.1
-// source: Protocol-buffers/post/post.proto
+// source: post/post.proto
 
 package post
 
@@ -27,6 +27,10 @@ const (
 	PostService_AddImageToPost_FullMethodName           = "/post.PostService/AddImageToPost"
 	PostService_RemoveImageFromPost_FullMethodName      = "/post.PostService/RemoveImageFromPost"
 	PostService_GetPostByCountry_FullMethodName         = "/post.PostService/GetPostByCountry"
+	PostService_GetUserRecommendation_FullMethodName    = "/post.PostService/GetUserRecommendation"
+	PostService_GetPostsByUsername_FullMethodName       = "/post.PostService/GetPostsByUsername"
+	PostService_GetTrendsPost_FullMethodName            = "/post.PostService/GetTrendsPost"
+	PostService_SearchPost_FullMethodName               = "/post.PostService/SearchPost"
 	PostService_AddLikePost_FullMethodName              = "/post.PostService/AddLikePost"
 	PostService_DeleteLikePost_FullMethodName           = "/post.PostService/DeleteLikePost"
 	PostService_AddLikeComment_FullMethodName           = "/post.PostService/AddLikeComment"
@@ -69,6 +73,11 @@ type PostServiceClient interface {
 	AddImageToPost(ctx context.Context, in *ImageUrl, opts ...grpc.CallOption) (*PostResponse, error)
 	RemoveImageFromPost(ctx context.Context, in *ImageUrl, opts ...grpc.CallOption) (*Message, error)
 	GetPostByCountry(ctx context.Context, in *PostCountry, opts ...grpc.CallOption) (*PostListResponse, error)
+	// basic-additional
+	GetUserRecommendation(ctx context.Context, in *Username, opts ...grpc.CallOption) (*PostListResponse, error)
+	GetPostsByUsername(ctx context.Context, in *Username, opts ...grpc.CallOption) (*PostListResponse, error)
+	GetTrendsPost(ctx context.Context, in *Void, opts ...grpc.CallOption) (*PostListResponse, error)
+	SearchPost(ctx context.Context, in *Search, opts ...grpc.CallOption) (*PostListResponse, error)
 	// like
 	AddLikePost(ctx context.Context, in *LikePost, opts ...grpc.CallOption) (*LikeResponse, error)
 	DeleteLikePost(ctx context.Context, in *LikePost, opts ...grpc.CallOption) (*Message, error)
@@ -183,6 +192,46 @@ func (c *postServiceClient) GetPostByCountry(ctx context.Context, in *PostCountr
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PostListResponse)
 	err := c.cc.Invoke(ctx, PostService_GetPostByCountry_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) GetUserRecommendation(ctx context.Context, in *Username, opts ...grpc.CallOption) (*PostListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PostListResponse)
+	err := c.cc.Invoke(ctx, PostService_GetUserRecommendation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) GetPostsByUsername(ctx context.Context, in *Username, opts ...grpc.CallOption) (*PostListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PostListResponse)
+	err := c.cc.Invoke(ctx, PostService_GetPostsByUsername_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) GetTrendsPost(ctx context.Context, in *Void, opts ...grpc.CallOption) (*PostListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PostListResponse)
+	err := c.cc.Invoke(ctx, PostService_GetTrendsPost_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) SearchPost(ctx context.Context, in *Search, opts ...grpc.CallOption) (*PostListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PostListResponse)
+	err := c.cc.Invoke(ctx, PostService_SearchPost_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -472,6 +521,11 @@ type PostServiceServer interface {
 	AddImageToPost(context.Context, *ImageUrl) (*PostResponse, error)
 	RemoveImageFromPost(context.Context, *ImageUrl) (*Message, error)
 	GetPostByCountry(context.Context, *PostCountry) (*PostListResponse, error)
+	// basic-additional
+	GetUserRecommendation(context.Context, *Username) (*PostListResponse, error)
+	GetPostsByUsername(context.Context, *Username) (*PostListResponse, error)
+	GetTrendsPost(context.Context, *Void) (*PostListResponse, error)
+	SearchPost(context.Context, *Search) (*PostListResponse, error)
 	// like
 	AddLikePost(context.Context, *LikePost) (*LikeResponse, error)
 	DeleteLikePost(context.Context, *LikePost) (*Message, error)
@@ -532,6 +586,18 @@ func (UnimplementedPostServiceServer) RemoveImageFromPost(context.Context, *Imag
 }
 func (UnimplementedPostServiceServer) GetPostByCountry(context.Context, *PostCountry) (*PostListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPostByCountry not implemented")
+}
+func (UnimplementedPostServiceServer) GetUserRecommendation(context.Context, *Username) (*PostListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserRecommendation not implemented")
+}
+func (UnimplementedPostServiceServer) GetPostsByUsername(context.Context, *Username) (*PostListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPostsByUsername not implemented")
+}
+func (UnimplementedPostServiceServer) GetTrendsPost(context.Context, *Void) (*PostListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTrendsPost not implemented")
+}
+func (UnimplementedPostServiceServer) SearchPost(context.Context, *Search) (*PostListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchPost not implemented")
 }
 func (UnimplementedPostServiceServer) AddLikePost(context.Context, *LikePost) (*LikeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddLikePost not implemented")
@@ -767,6 +833,78 @@ func _PostService_GetPostByCountry_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PostServiceServer).GetPostByCountry(ctx, req.(*PostCountry))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_GetUserRecommendation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Username)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).GetUserRecommendation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_GetUserRecommendation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).GetUserRecommendation(ctx, req.(*Username))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_GetPostsByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Username)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).GetPostsByUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_GetPostsByUsername_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).GetPostsByUsername(ctx, req.(*Username))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_GetTrendsPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Void)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).GetTrendsPost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_GetTrendsPost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).GetTrendsPost(ctx, req.(*Void))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_SearchPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Search)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).SearchPost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_SearchPost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).SearchPost(ctx, req.(*Search))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1297,6 +1435,22 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PostService_GetPostByCountry_Handler,
 		},
 		{
+			MethodName: "GetUserRecommendation",
+			Handler:    _PostService_GetUserRecommendation_Handler,
+		},
+		{
+			MethodName: "GetPostsByUsername",
+			Handler:    _PostService_GetPostsByUsername_Handler,
+		},
+		{
+			MethodName: "GetTrendsPost",
+			Handler:    _PostService_GetTrendsPost_Handler,
+		},
+		{
+			MethodName: "SearchPost",
+			Handler:    _PostService_SearchPost_Handler,
+		},
+		{
 			MethodName: "AddLikePost",
 			Handler:    _PostService_AddLikePost_Handler,
 		},
@@ -1406,5 +1560,5 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "Protocol-buffers/post/post.proto",
+	Metadata: "post/post.proto",
 }
