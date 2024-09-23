@@ -7,11 +7,12 @@ import (
 )
 
 type PostService struct {
-	post    storage.PostStorage
-	like    storage.LikeStorage
-	comment storage.CommentStorage
-	chat    storage.ChatStorage
-	logger  slog.Logger
+	post       storage.PostStorage
+	like       storage.LikeStorage
+	comment    storage.CommentStorage
+	chat       storage.ChatStorage
+	additional storage.BasicAdditional
+	logger     slog.Logger
 	pb.UnimplementedPostServiceServer
 }
 
