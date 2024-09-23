@@ -29,10 +29,10 @@ func main() {
 
 	postSR := service.NewPostService(chatST, postSt, likeSt, commentSt, logger)
 
-	listen, err := net.Listen("tcp", cfg.POST_SERVICE)
-	fmt.Println("Listening on " + cfg.POST_SERVICE)
+	listen, err := net.Listen("tcp", cfg.POST_PORT)
+	fmt.Println("Listening on " + cfg.POST_PORT)
 	if err != nil {
-		logger.Error("Error listening on port " + cfg.POST_SERVICE)
+		logger.Error("Error listening on port " + cfg.POST_PORT)
 		log.Fatal(err)
 	}
 
@@ -40,7 +40,7 @@ func main() {
 	post.RegisterPostServiceServer(server, postSR)
 
 	if err := server.Serve(listen); err != nil {
-		logger.Error("Error serving on port " + cfg.POST_SERVICE)
+		logger.Error("Error serving on port " + cfg.POST_PORT)
 		log.Fatal(err)
 	}
 }
