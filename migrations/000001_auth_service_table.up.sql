@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS hashtag
 CREATE TABLE IF NOT EXISTS countries
 (
     id          UUID DEFAULT gen_random_uuid(),
-    country     VARCHAR,
-    nationality VARCHAR PRIMARY KEY,
+    country     VARCHAR PRIMARY KEY,
+    nationality VARCHAR ,
     flag        VARCHAR
 );
 
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS posts
 (
     id          UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
     user_id     UUID    NOT NULL,
-    nationality VARCHAR REFERENCES countries (nationality),
+    country VARCHAR REFERENCES countries (country),
     location    VARCHAR NOT NULL,
     title       VARCHAR NOT NULL,
     description VARCHAR NOT NULL,

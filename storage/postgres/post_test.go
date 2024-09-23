@@ -20,11 +20,12 @@ func TestCreatePost(t *testing.T) {
 
 	res := pb.Post{
 		UserId:      uuid.New().String(),
-		Nationality: "Toshkent",
-		Location:    "dodi1",
-		Title:       "dodi1",
-		Hashtag:     "dodi",
-		Content:     "dodi1",
+		Country:     "Uzbekistan",
+		Location:    "1111",
+		Title:       "1111",
+		Hashtag:     "1111",
+		Content:     "1111",
+		Description: "nimadur",
 	}
 
 	post := NewPostStorage(db)
@@ -44,10 +45,10 @@ func TestUpdatePost(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.UpdateAPost{
-		Id:          "6622e177-582a-4d7a-bd78-1743f611c7ae",
-		Nationality: "Toshkent",
-		Title:       "dodi2",
-		Content:     "Uzbekistan",
+		Id:      "2a05b627-d55b-42f3-b497-fed2b014fd1b",
+		Country: "Uzbekistan",
+		Title:   "dodi2",
+		Content: "Uzbekistan",
 	}
 
 	post := NewPostStorage(db)
@@ -66,7 +67,7 @@ func TestGetPostByID(t *testing.T) {
 	}
 
 	res := pb.PostId{
-		Id: "6622e177-582a-4d7a-bd78-1743f611c7ae",
+		Id: "2a05b627-d55b-42f3-b497-fed2b014fd1b",
 	}
 
 	post := NewPostStorage(db)
@@ -86,7 +87,7 @@ func TestListPosts(t *testing.T) {
 	}
 	res := pb.PostList{
 		Limit:   5,
-		Country: "Toshkent",
+		Country: "Uzbekistan",
 	}
 
 	post := NewPostStorage(db)
@@ -105,7 +106,7 @@ func TestDeletePost(t *testing.T) {
 	}
 
 	res := pb.PostId{
-		Id: "67b99246-ed95-49dd-8cc6-8f0009bdaf0b",
+		Id: "a2083af4-ee47-47f9-b4ed-096c3b75934a",
 	}
 
 	post := NewPostStorage(db)
@@ -124,7 +125,7 @@ func TestAddImageToPost(t *testing.T) {
 	}
 
 	res := pb.ImageUrl{
-		PostId: "eca9c592-2468-4316-8221-26d1ac9411ab",
+		PostId: "2a05b627-d55b-42f3-b497-fed2b014fd1b",
 		Url:    "dodi",
 	}
 
@@ -143,7 +144,7 @@ func TestRemoveImageFromPost(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.ImageUrl{
-		PostId: "eca9c592-2468-4316-8221-26d1ac9411ab",
+		PostId: "2a05b627-d55b-42f3-b497-fed2b014fd1b",
 	}
 	post := NewPostStorage(db)
 	req, err := post.RemoveImageFromPost(&res)
@@ -160,7 +161,7 @@ func TestGetPostByCountry(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.PostCountry{
-		Nationality: "Toshkent",
+		Country: "Uzbekistan",
 	}
 
 	post := NewPostStorage(db)

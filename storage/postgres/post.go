@@ -34,33 +34,36 @@ func (p *PostStorage) CreatePost(in *pb.Post) (*pb.PostResponse, error) {
 	} else if err != nil {
 		return nil, fmt.Errorf("failed to query hashtag: %v", err)
 	}
+	fmt.Println("dodi")
 
-	query4 := `SELECT nationality FROM hashtag WHERE nationality = $1`
+	query4 := `SELECT country FROM countries WHERE country = $1`
 
-	err = p.db.QueryRowContext(context.Background(), query4, in.Nationality).Scan(&in.Nationality)
+	err = p.db.QueryRowContext(context.Background(), query4, in.Country).Scan(&in.Country)
 	if err == sql.ErrNoRows {
-		query3 := `INSERT INTO countries (nationality, city_name, country, flag) VALUES ($1, $2, $3, $4)`
-		_, err = p.db.ExecContext(context.Background(), query3, in.Nationality, "uz", "Uzbekistan", "dodi")
+		query3 := `INSERT INTO countries (nationality, country, flag) VALUES ($1, $2, $3)`
+		_, err = p.db.ExecContext(context.Background(), query3, "uz", in.Country, "dodi")
 		if err != nil {
 			return nil, fmt.Errorf("failed to insert new nationality: %v", err)
 		}
 	}
-
-	query := `INSERT INTO posts (user_id, nationality, location, title, hashtag, content) 
-	          VALUES ($1, $2, $3, $4, $5, $6) 
-	          RETURNING id, user_id, nationality, location, title, hashtag, content, created_at`
+	fmt.Println("dodi")
+	query := `INSERT INTO posts (user_id, country, location, title, hashtag, content, description) 
+	          VALUES ($1, $2, $3, $4, $5, $6, $7) 
+	          RETURNING id, user_id, country, location, title, hashtag, content, created_at, description`
 
 	var res pb.PostResponse
 	err = p.db.QueryRowContext(context.Background(), query,
-		in.UserId, in.Nationality, in.Location, in.Title, in.Hashtag, in.Content).Scan(
+		in.UserId, in.Country, in.Location, in.Title, in.Hashtag, in.Content, in.Description).Scan(
 		&res.Id,
 		&res.UserId,
-		&res.Nationality,
+		&res.Country,
 		&res.Location,
 		&res.Title,
 		&res.Hashtag,
 		&res.Content,
-		&res.CreatedAt)
+		&res.CreatedAt,
+		&res.Description)
+	fmt.Println("dodi")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create post: %v", err)
 	}
@@ -73,10 +76,15 @@ func (p *PostStorage) UpdatePost(in *pb.UpdateAPost) (*pb.PostResponse, error) {
 	args := []interface{}{}
 	argIndex := 1
 	updateFields := []string{}
+	if in.Description != "" {
+		updateFields = append(updateFields, "description")
+		args = append(args, in.Description)
+		argIndex++
+	}
 
-	if in.Nationality != "" {
-		updateFields = append(updateFields, fmt.Sprintf("nationality = $%d", argIndex))
-		args = append(args, in.Nationality)
+	if in.Country != "" {
+		updateFields = append(updateFields, fmt.Sprintf("country = $%d", argIndex))
+		args = append(args, in.Country)
 		argIndex++
 	}
 
@@ -118,13 +126,13 @@ func (p *PostStorage) UpdatePost(in *pb.UpdateAPost) (*pb.PostResponse, error) {
 		return nil, fmt.Errorf("hech qanday maydon yangilanmadi")
 	}
 
-	query += fmt.Sprintf(" WHERE id = $%d RETURNING id, user_id, nationality, location, title, hashtag, content, image_url, created_at, updated_at", argIndex)
+	query += fmt.Sprintf(" WHERE id = $%d RETURNING id, user_id, country, location, title, hashtag, content, image_url, description,  created_at, updated_at", argIndex)
 	args = append(args, in.Id)
 
 	fmt.Println("dodi")
 	var res pb.PostResponse
 	err := p.db.QueryRowContext(context.Background(), query, args...).Scan(
-		&res.Id, &res.UserId, &res.Nationality, &res.Location, &res.Title, &res.Hashtag, &res.Content, &res.ImageUrl, &res.CreatedAt, &res.UpdatedAt)
+		&res.Id, &res.UserId, &res.Country, &res.Location, &res.Title, &res.Hashtag, &res.Content, &res.ImageUrl, &res.Description, &res.CreatedAt, &res.UpdatedAt)
 
 	if err != nil {
 		return nil, err
@@ -135,12 +143,12 @@ func (p *PostStorage) UpdatePost(in *pb.UpdateAPost) (*pb.PostResponse, error) {
 }
 
 func (p *PostStorage) GetPostByID(in *pb.PostId) (*pb.PostResponse, error) {
-	query := `SELECT id, user_id, nationality, location, title, hashtag, content, image_url, created_at, updated_at 
+	query := `SELECT id, user_id, country, location, title, hashtag, content, image_url, description, created_at, updated_at 
 	          FROM posts WHERE id = $1`
 
 	var res pb.PostResponse
 	err := p.db.QueryRowContext(context.Background(), query, in.Id).Scan(
-		&res.Id, &res.UserId, &res.Nationality, &res.Location, &res.Title, &res.Hashtag, &res.Content, &res.ImageUrl, &res.CreatedAt, &res.UpdatedAt)
+		&res.Id, &res.UserId, &res.Country, &res.Location, &res.Title, &res.Hashtag, &res.Content, &res.ImageUrl, &res.Description, &res.CreatedAt, &res.UpdatedAt)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -153,7 +161,7 @@ func (p *PostStorage) GetPostByID(in *pb.PostId) (*pb.PostResponse, error) {
 }
 
 func (p *PostStorage) ListPosts(in *pb.PostList) (*pb.PostListResponse, error) {
-	query := "SELECT id, user_id, nationality, location, title, hashtag, content, image_url, created_at, updated_at FROM posts WHERE deleted_at = 0"
+	query := "SELECT id, user_id, country, location, title, hashtag, content, image_url, description, created_at, updated_at FROM posts WHERE deleted_at = 0"
 	args := []interface{}{}
 
 	if in.Hashtag != "" {
@@ -162,7 +170,7 @@ func (p *PostStorage) ListPosts(in *pb.PostList) (*pb.PostListResponse, error) {
 	}
 
 	if in.Country != "" {
-		query += " AND nationality = $" + fmt.Sprintf("%d", len(args)+1)
+		query += " AND country = $" + fmt.Sprintf("%d", len(args)+1)
 		args = append(args, in.Country)
 	}
 
@@ -184,8 +192,8 @@ func (p *PostStorage) ListPosts(in *pb.PostList) (*pb.PostListResponse, error) {
 	var posts []*pb.PostResponse
 	for rows.Next() {
 		var post pb.PostResponse
-		if err := rows.Scan(&post.Id, &post.UserId, &post.Nationality, &post.Location, &post.Title,
-			&post.Hashtag, &post.Content, &post.ImageUrl, &post.CreatedAt, &post.UpdatedAt); err != nil {
+		if err := rows.Scan(&post.Id, &post.UserId, &post.Country, &post.Location, &post.Title,
+			&post.Hashtag, &post.Content, &post.ImageUrl, &post.Description, &post.CreatedAt, &post.UpdatedAt); err != nil {
 			return nil, err
 		}
 		posts = append(posts, &post)
@@ -246,10 +254,10 @@ func (p *PostStorage) RemoveImageFromPost(in *pb.ImageUrl) (*pb.Message, error) 
 }
 
 func (p *PostStorage) GetPostByCountry(in *pb.PostCountry) (*pb.PostListResponse, error) {
-	query := `SELECT id, user_id, nationality, location, title, hashtag, content, image_url, created_at, updated_at 
-	          FROM posts WHERE nationality = $1`
+	query := `SELECT id, user_id, country, location, title, hashtag, content, image_url, description, created_at, updated_at 
+	          FROM posts WHERE country = $1`
 
-	rows, err := p.db.QueryContext(context.Background(), query, in.Nationality)
+	rows, err := p.db.QueryContext(context.Background(), query, in.Country)
 	if err != nil {
 		return nil, err
 	}
@@ -258,8 +266,8 @@ func (p *PostStorage) GetPostByCountry(in *pb.PostCountry) (*pb.PostListResponse
 	var posts []*pb.PostResponse
 	for rows.Next() {
 		var post pb.PostResponse
-		if err := rows.Scan(&post.Id, &post.UserId, &post.Nationality, &post.Location, &post.Title,
-			&post.Hashtag, &post.Content, &post.ImageUrl, &post.CreatedAt, &post.UpdatedAt); err != nil {
+		if err := rows.Scan(&post.Id, &post.UserId, &post.Country, &post.Location, &post.Title,
+			&post.Hashtag, &post.Content, &post.ImageUrl, &post.Description, &post.CreatedAt, &post.UpdatedAt); err != nil {
 			return nil, err
 		}
 		posts = append(posts, &post)
