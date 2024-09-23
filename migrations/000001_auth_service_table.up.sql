@@ -51,6 +51,13 @@ CREATE TABLE IF NOT EXISTS likes
     UNIQUE (user_id, post_id)
 );
 
+CREATE TABLE IF NOT EXISTS comment_like (
+    user_id UUID NOT NULL,
+    comment_id UUID REFERENCES comments (id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    UNIQUE (user_id, comment_id)
+);
+
 
 -- ------------------- table for chat ------------------------------
 

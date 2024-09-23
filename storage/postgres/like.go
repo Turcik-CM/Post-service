@@ -47,9 +47,9 @@ func (l *LikeStorage) DeleteLikePost(in *pb.LikePost) (*pb.Message, error) {
 }
 
 func (l *LikeStorage) AddLikeComment(in *pb.LikeCommit) (*pb.LikeComResponse, error) {
-	query := `INSERT INTO likes (user_id, post_id, created_at) 
+	query := `INSERT INTO comment_like (user_id, comment_id, created_at) 
 	          VALUES ($1, $2, NOW()) 
-	          RETURNING user_id, post_id`
+	          RETURNING user_id, comment_id`
 
 	var res pb.LikeComResponse
 	err := l.db.QueryRowContext(context.Background(), query, in.UserId, in.CommitId).Scan(
@@ -63,7 +63,7 @@ func (l *LikeStorage) AddLikeComment(in *pb.LikeCommit) (*pb.LikeComResponse, er
 }
 
 func (l *LikeStorage) DeleteLikeComment(in *pb.LikeCommit) (*pb.Message, error) {
-	query := `DELETE FROM likes WHERE user_id = $1 AND post_id = $2`
+	query := `DELETE FROM comment_like WHERE user_id = $1 AND comment_id = $2`
 
 	_, err := l.db.ExecContext(context.Background(), query, in.UserId, in.CommitId)
 	if err != nil {
