@@ -18,92 +18,102 @@ func NewBasicAdditional(db *sqlx.DB) storage.BasicAdditional {
 }
 
 func (b *BasicAdditional) GetUserRecommendation(in *pb.Username) (*pb.PostListResponse, error) {
-	var res *pb.PostListResponse
+	res := &pb.PostListResponse{
+		Post: []*pb.PostResponse{},
+	}
 
-	// getting last 10 posts which user liked
 	var postID []string
-	err := b.db.Select(&postID, "SELECT post_id from likes where user_id=$1 order by created_at desc limit 10", in.Username)
+	err := b.db.Select(&postID, "SELECT post_id FROM likes WHERE user_id=$1 ORDER BY created_at DESC LIMIT 10", in.Username)
 	if errors.Is(err, sql.ErrNoRows) {
-		err = b.db.Select(&res, `SELECT id, user_id, nationality, location, title, hashtag, content,
-       image_url, created_at, updated_at FROM posts order by created_at desc limit 20`)
+		err = b.db.Select(&res.Post, "SELECT id, user_id, country, location, title, hashtag, content, image_url, created_at, updated_at FROM posts ORDER BY created_at DESC LIMIT 20")
 		return res, err
 	}
 	if err != nil {
+		log.Println("Error in getting Post ID:", err)
 		return nil, err
 	}
 
-	// getting user ID from Post table
+	// Получаем user_id из таблицы постов
 	var userId []string
-	q := "SELECT user_id from posts where id in (?)"
-
+	q := "SELECT user_id FROM posts WHERE id IN (?)"
 	query, args, err := sqlx.In(q, postID)
 	if err != nil {
+		log.Println("Error preparing request for user IDs:", err)
 		return nil, err
 	}
 
-	log.Println(query, args)
-
 	query = b.db.Rebind(query)
-	log.Println(query)
-
 	err = b.db.Select(&userId, query, args...)
 	if err != nil {
+		log.Println("Error in getting User ID:", err)
 		return nil, err
 	}
 
-	// getting  nationality from Post table which user liked
+	// Получаем национальности из таблицы постов
 	var nationality []string
-	q = "SELECT nationality from posts where id in (?)"
-
+	q = "SELECT country FROM posts WHERE id IN (?)"
 	query, args, err = sqlx.In(q, postID)
 	if err != nil {
+		log.Println("Error preparing request for counties:", err)
 		return nil, err
 	}
 
-	log.Println(query, args)
-
 	query = b.db.Rebind(query)
-	log.Println(query)
-
 	err = b.db.Select(&nationality, query, args...)
 	if err != nil {
+		log.Println("Error in getting Countries:", err)
 		return nil, err
 	}
 
-	// getting  hashtag from Post table which user liked
+	// Получаем хэштеги из таблицы постов
 	var hashtag []string
-	q = "SELECT hashtag from posts where id in (?)"
-
+	q = "SELECT hashtag FROM posts WHERE id IN (?)"
 	query, args, err = sqlx.In(q, postID)
 	if err != nil {
+		log.Println("Error preparing request for hashtag:", err)
 		return nil, err
 	}
 
-	log.Println(query, args)
-
 	query = b.db.Rebind(query)
-	log.Println(query)
-
 	err = b.db.Select(&hashtag, query, args...)
 	if err != nil {
+		log.Println("Error in getting hashtag:", err)
 		return nil, err
 	}
 
-	// getting user recommended posts
-	q = `SELECT id, user_id, nationality, location, title, hashtag, content, image_url, created_at, updated_at 
+	// Получаем рекомендованные посты для пользователя
+	q = `SELECT id, user_id, country, location, title, hashtag, content, image_url, created_at, updated_at 
          FROM posts 
-         WHERE nationality IN (?) AND user_id IN (?) AND hashtag IN (?) 
-         order by created_at desc
-         limit 20`
-
+         WHERE country IN (?) AND user_id IN (?) AND hashtag IN (?) 
+         ORDER BY created_at DESC
+         LIMIT 20`
 	query, args, err = sqlx.In(q, nationality, userId, hashtag)
 	if err != nil {
+		log.Println("Error preparing request for getting Posts:", err)
 		return nil, err
 	}
 
 	query = b.db.Rebind(query)
-	err = b.db.Select(&res, query, args...)
+	rows, err := b.db.Query(query, args...)
 	if err != nil {
+		log.Println("Error in getting posts:", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var post pb.PostResponse
+		err = rows.Scan(&post.Id, &post.UserId, &post.Country, &post.Location, &post.Title, &post.Hashtag, &post.Content, &post.ImageUrl, &post.CreatedAt, &post.UpdatedAt)
+		if err != nil {
+			log.Println("Error in Scanning posts:", err)
+			return nil, err
+		}
+
+		res.Post = append(res.Post, &post)
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Println("Ошибка при переборе строк:", err)
 		return nil, err
 	}
 
@@ -135,7 +145,7 @@ func (b *BasicAdditional) SearchPost(in *pb.Search) (*pb.PostListResponse, error
 
 	in.Action = "%" + in.Action + "%"
 
-	query := `SELECT id, user_id, nationality, location, title, hashtag, content, image_url,
+	query := `SELECT id, user_id, country, location, title, hashtag, content, image_url,
        created_at, updated_at FROM posts WHERE title ilike $1 or description ilike $2 or hashtag $3`
 
 	err := b.db.Select(&res, query, in.Action, in.Action, in.Action)

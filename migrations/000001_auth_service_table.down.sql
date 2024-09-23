@@ -1,5 +1,6 @@
 drop table messages;
 drop table chat;
+drop table comment_like;
 drop table likes;
 drop table comments;
 drop table posts;

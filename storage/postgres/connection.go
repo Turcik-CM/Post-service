@@ -17,3 +17,14 @@ func ConnectPostgres(config config.Config) (*sqlx.DB, error) {
 	}
 	return db, nil
 }
+
+func TestConnect() (*sqlx.DB, error) {
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		"localhost", "5432", "postgres", "123321", "turkic")
+
+	db, err := sqlx.Open("postgres", psqlInfo)
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
+}
