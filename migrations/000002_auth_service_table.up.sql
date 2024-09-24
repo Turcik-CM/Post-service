@@ -19,4 +19,14 @@ VALUES
     ('Afghanistan', 'Turkmen', 'https://flagpedia.net/data/flags/h80/af.png'),
     ('Iraq', 'Iraqi Turkmen', 'https://flagpedia.net/data/flags/h80/iq.png'),
     ('Syria', 'Syrian Turkmen', 'https://flagpedia.net/data/flags/h80/sy.png'),
-    ('Georgia', 'Meskhetian Turk', 'https://flagpedia.net/data/flags/h80/ge.png');
+    ('Georgia', 'Meskhetian Turk', 'https://flagpedia.net/data/flags/h80/ge.png'),
+    ('Hungary', 'Kipchak Turkic', 'https://flagpedia.net/data/flags/h80/hu.png'),
+    ('Mongolia', 'Kazakh', 'https://flagpedia.net/data/flags/h80/mn.png'),
+    ('Russia', 'Nogai', 'https://flagpedia.net/data/flags/h80/ru.png'),
+    ('Iran', 'Azerbaijani Turk', 'https://flagpedia.net/data/flags/h80/ir.png'),
+    ('Cyprus', 'Turkish Cypriot', 'https://flagpedia.net/data/flags/h80/cy.png'),
+    ('Bulgaria', 'Bulgarian Turk', 'https://flagpedia.net/data/flags/h80/bg.png'),
+    ('Greece', 'Western Thrace Turk', 'https://flagpedia.net/data/flags/h80/gr.png'),
+    ('North Macedonia', 'Macedonian Turk', 'https://flagpedia.net/data/flags/h80/mk.png'),
+    ('Romania', 'Romanian Turk', 'https://flagpedia.net/data/flags/h80/ro.png'),
+    ('Ukraine', 'Crimean Tatar', 'https://flagpedia.net/data/flags/h80/ua.png');

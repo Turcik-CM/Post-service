@@ -33,7 +33,6 @@ func (b *BasicAdditional) GetUserRecommendation(in *pb.Username) (*pb.PostListRe
 		return nil, err
 	}
 
-	// Получаем user_id из таблицы постов
 	var userId []string
 	q := "SELECT user_id FROM posts WHERE id IN (?)"
 	query, args, err := sqlx.In(q, postID)
@@ -49,7 +48,6 @@ func (b *BasicAdditional) GetUserRecommendation(in *pb.Username) (*pb.PostListRe
 		return nil, err
 	}
 
-	// Получаем национальности из таблицы постов
 	var nationality []string
 	q = "SELECT country FROM posts WHERE id IN (?)"
 	query, args, err = sqlx.In(q, postID)
@@ -65,7 +63,6 @@ func (b *BasicAdditional) GetUserRecommendation(in *pb.Username) (*pb.PostListRe
 		return nil, err
 	}
 
-	// Получаем хэштеги из таблицы постов
 	var hashtag []string
 	q = "SELECT hashtag FROM posts WHERE id IN (?)"
 	query, args, err = sqlx.In(q, postID)
@@ -81,7 +78,6 @@ func (b *BasicAdditional) GetUserRecommendation(in *pb.Username) (*pb.PostListRe
 		return nil, err
 	}
 
-	// Получаем рекомендованные посты для пользователя
 	q = `SELECT id, user_id, country, location, title, hashtag, content, image_url, created_at, updated_at 
          FROM posts 
          WHERE country IN (?) AND user_id IN (?) AND hashtag IN (?) 
@@ -121,15 +117,31 @@ func (b *BasicAdditional) GetUserRecommendation(in *pb.Username) (*pb.PostListRe
 }
 
 func (b *BasicAdditional) GetPostsByUsername(in *pb.Username) (*pb.PostListResponse, error) {
-	var res *pb.PostListResponse
+	var res []*pb.PostResponse
 
-	err := b.db.Select(&res, `SELECT id, user_id, nationality, location, title, hashtag, content, image_url,
+	rows, err := b.db.Query(`SELECT id, user_id, country, location, title, hashtag, content, image_url,
        created_at, updated_at FROM posts WHERE user_id=$1 order by created_at desc`, in.Username)
 	if err != nil {
 		return nil, err
 	}
 
-	return res, nil
+	for rows.Next() {
+		var post pb.PostResponse
+		err = rows.Scan(&post.Id, &post.UserId, &post.Country, &post.Location, &post.Title, &post.Hashtag, &post.Content, &post.ImageUrl, &post.CreatedAt, &post.UpdatedAt)
+		if err != nil {
+			log.Println("Error in Scanning posts:", err)
+			return nil, err
+		}
+
+		res = append(res, &post)
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Println("Ошибка при переборе строк:", err)
+		return nil, err
+	}
+
+	return &pb.PostListResponse{Post: res}, nil
 }
 
 func (b *BasicAdditional) GetTrendsPost(in *pb.Void) (*pb.PostListResponse, error) {
@@ -137,21 +149,37 @@ func (b *BasicAdditional) GetTrendsPost(in *pb.Void) (*pb.PostListResponse, erro
 }
 
 func (b *BasicAdditional) SearchPost(in *pb.Search) (*pb.PostListResponse, error) {
-	var res *pb.PostListResponse
+	var res []*pb.PostResponse
 
 	if in.Action == "" {
-		return res, nil
+		return nil, nil
 	}
 
 	in.Action = "%" + in.Action + "%"
 
 	query := `SELECT id, user_id, country, location, title, hashtag, content, image_url,
-       created_at, updated_at FROM posts WHERE title ilike $1 or description ilike $2 or hashtag $3`
+       created_at, updated_at FROM posts WHERE title ilike $1 or description ilike $2 or hashtag ilike $3`
 
-	err := b.db.Select(&res, query, in.Action, in.Action, in.Action)
+	rows, err := b.db.Query(query, in.Action, in.Action, in.Action)
 	if err != nil {
 		return nil, err
 	}
 
-	return res, nil
+	for rows.Next() {
+		var post pb.PostResponse
+		err = rows.Scan(&post.Id, &post.UserId, &post.Country, &post.Location, &post.Title, &post.Hashtag, &post.Content, &post.ImageUrl, &post.CreatedAt, &post.UpdatedAt)
+		if err != nil {
+			log.Println("Error in Scanning posts:", err)
+			return nil, err
+		}
+
+		res = append(res, &post)
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Println("Ошибка при переборе строк:", err)
+		return nil, err
+	}
+
+	return &pb.PostListResponse{Post: res}, nil
 }
