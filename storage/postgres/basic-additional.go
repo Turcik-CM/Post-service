@@ -109,7 +109,6 @@ func (b *BasicAdditional) GetUserRecommendation(in *pb.Username) (*pb.PostListRe
 	}
 
 	if err = rows.Err(); err != nil {
-		log.Println("Ошибка при переборе строк:", err)
 		return nil, err
 	}
 
@@ -137,7 +136,6 @@ func (b *BasicAdditional) GetPostsByUsername(in *pb.Username) (*pb.PostListRespo
 	}
 
 	if err = rows.Err(); err != nil {
-		log.Println("Ошибка при переборе строк:", err)
 		return nil, err
 	}
 
@@ -177,7 +175,6 @@ func (b *BasicAdditional) SearchPost(in *pb.Search) (*pb.PostListResponse, error
 	}
 
 	if err = rows.Err(); err != nil {
-		log.Println("Ошибка при переборе строк:", err)
 		return nil, err
 	}
 
