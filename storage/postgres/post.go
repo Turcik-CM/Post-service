@@ -36,16 +36,6 @@ func (p *PostStorage) CreatePost(in *pb.Post) (*pb.PostResponse, error) {
 	}
 	fmt.Println("dodi")
 
-	query4 := `SELECT country FROM countries WHERE country = $1`
-
-	err = p.db.QueryRowContext(context.Background(), query4, in.Country).Scan(&in.Country)
-	if err == sql.ErrNoRows {
-		query3 := `INSERT INTO countries (nationality, country, flag) VALUES ($1, $2, $3)`
-		_, err = p.db.ExecContext(context.Background(), query3, "uz", in.Country, "dodi")
-		if err != nil {
-			return nil, fmt.Errorf("failed to insert new nationality: %v", err)
-		}
-	}
 	fmt.Println("dodi")
 	query := `INSERT INTO posts (user_id, country, location, title, hashtag, content, description) 
 	          VALUES ($1, $2, $3, $4, $5, $6, $7) 
