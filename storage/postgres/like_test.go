@@ -18,7 +18,7 @@ func TestAddLikePost(t *testing.T) {
 
 	res := pb.LikePost{
 		UserId: uuid.New().String(),
-		PostId: "0a167e10-a32c-4df7-b88e-03c0e00301a5",
+		PostId: "a2083af4-ee47-47f9-b4ed-096c3b75934a",
 	}
 
 	like := NewLikeStorage(db)
@@ -57,8 +57,8 @@ func TestAddLikeComment(t *testing.T) {
 	}
 
 	res := pb.LikePost{
-		UserId: "08d32f24-fcc7-4238-aa75-6f7be3787e5d",
-		PostId: "0a167e10-a32c-4df7-b88e-03c0e00301a5",
+		UserId: "2b1b7f64-aaf3-4edc-855b-59482d5ed687",
+		PostId: "a2083af4-ee47-47f9-b4ed-096c3b75934a",
 	}
 
 	like := NewLikeStorage(db)

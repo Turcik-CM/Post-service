@@ -38,7 +38,7 @@ func TestSendMessage(t *testing.T) {
 	}
 	defer db.Close()
 	res := pb.CreateMassage{
-		ChatId:      "f56d292e-55a4-4a86-bffe-c9eca93e9248",
+		ChatId:      "85a8081f-7018-4a1c-bbd9-611ecac4a70c",
 		SenderId:    uuid.New().String(),
 		ContentType: "text",
 		Content:     "dodi",

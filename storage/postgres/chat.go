@@ -108,7 +108,7 @@ func (c *ChatStorage) MessageMarcTrue(in *pb.MassageTrue) (*pb.Message, error) {
 }
 
 func (c *ChatStorage) GetUserChats(in *pb.Username) (*pb.ChatResponseList, error) {
-	query := `SELECT id, user1_id, user2_id FROM chat WHERE id = $1 ORDER BY created_at DESC`
+	query := `SELECT id, user1_id, user2_id FROM chat WHERE user1_id = $1 or user2_id = $1 ORDER BY created_at DESC`
 
 	rows, err := c.db.QueryContext(context.Background(), query, in.Username)
 	if err != nil {

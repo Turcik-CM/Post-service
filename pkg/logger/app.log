@@ -1,1 +1,25 @@
 {"time":"2024-09-20T16:03:16.119910514+05:00","level":"ERROR","msg":"Error listening on port 7070"}
+{"time":"2024-09-26T17:33:54.604291533+05:00","level":"ERROR","msg":"failed to post post","!BADKEY":"failed to query hashtag: pq: password authentication failed for user \"postgres\""}
+{"time":"2024-09-26T17:35:31.010624401+05:00","level":"ERROR","msg":"failed to post post","!BADKEY":"failed to query hashtag: pq: password authentication failed for user \"postgres\""}
+{"time":"2024-09-26T17:35:32.972974647+05:00","level":"ERROR","msg":"failed to post post","!BADKEY":"failed to query hashtag: pq: password authentication failed for user \"postgres\""}
+{"time":"2024-09-26T17:35:33.240790186+05:00","level":"ERROR","msg":"failed to post post","!BADKEY":"failed to query hashtag: pq: password authentication failed for user \"postgres\""}
+{"time":"2024-09-26T17:35:33.470403885+05:00","level":"ERROR","msg":"failed to post post","!BADKEY":"failed to query hashtag: pq: password authentication failed for user \"postgres\""}
+{"time":"2024-09-26T17:35:49.868639093+05:00","level":"ERROR","msg":"failed to post post","!BADKEY":"failed to query hashtag: pq: password authentication failed for user \"postgres\""}
+{"time":"2024-09-26T17:38:38.354562191+05:00","level":"ERROR","msg":"failed to update post","!BADKEY":"sql: no rows in result set"}
+{"time":"2024-09-26T17:42:42.63737057+05:00","level":"ERROR","msg":"failed to update post","!BADKEY":"sql: no rows in result set"}
+{"time":"2024-09-26T18:04:18.865066087+05:00","level":"ERROR","msg":"failed to AddImageToPost","!BADKEY":"pq: invalid input syntax for type uuid: \"\""}
+{"time":"2024-09-26T18:04:55.743489584+05:00","level":"ERROR","msg":"failed to AddImageToPost","!BADKEY":"pq: invalid input syntax for type uuid: \"\""}
+{"time":"2024-09-26T18:05:32.617497186+05:00","level":"ERROR","msg":"failed to AddImageToPost","!BADKEY":"pq: invalid input syntax for type uuid: \"\""}
+{"time":"2024-09-26T18:07:38.724699386+05:00","level":"ERROR","msg":"failed to AddImageToPost","!BADKEY":"pq: invalid input syntax for type uuid: \"\""}
+{"time":"2024-09-26T18:08:25.904381623+05:00","level":"ERROR","msg":"failed to AddImageToPost","!BADKEY":"pq: invalid input syntax for type uuid: \"\""}
+{"time":"2024-09-26T18:12:30.266240826+05:00","level":"ERROR","msg":"failed to RemoveImageFromPost","!BADKEY":"pq: invalid input syntax for type uuid: \"\""}
+{"time":"2024-09-26T18:13:50.661031025+05:00","level":"ERROR","msg":"failed to RemoveImageFromPost","!BADKEY":"pq: invalid input syntax for type uuid: \"{id}\""}
+{"time":"2024-09-26T18:42:20.58468247+05:00","level":"ERROR","msg":"failed to post cHAT","!BADKEY":"failed to create chat: pq: invalid input syntax for type uuid: \"string\""}
+{"time":"2024-09-26T18:42:49.897533831+05:00","level":"ERROR","msg":"failed to post cHAT","!BADKEY":"failed to create chat: pq: invalid input value for enum content: \"string\""}
+{"time":"2024-09-26T18:43:32.323762282+05:00","level":"ERROR","msg":"failed to post cHAT","!BADKEY":"failed to create chat: pq: invalid input value for enum content: \"string\""}
+{"time":"2024-09-26T18:44:12.646417868+05:00","level":"ERROR","msg":"failed to post cHAT","!BADKEY":"pq: invalid input syntax for type uuid: \"\""}
+{"time":"2024-09-26T18:44:21.062567606+05:00","level":"ERROR","msg":"failed to post cHAT","!BADKEY":"pq: invalid input syntax for type uuid: \"\""}
+{"time":"2024-09-26T18:45:31.885538728+05:00","level":"ERROR","msg":"failed to post cHAT","!BADKEY":"pq: invalid input syntax for type uuid: \"\""}
+{"time":"2024-09-26T18:45:42.647942974+05:00","level":"ERROR","msg":"failed to post cHAT","!BADKEY":"pq: invalid input syntax for type uuid: \"\""}
+{"time":"2024-09-26T18:59:03.652985429+05:00","level":"ERROR","msg":"failed to post cHAT","!BADKEY":"pq: invalid input syntax for type uuid: \"\""}
+{"time":"2024-09-26T19:00:26.401056861+05:00","level":"ERROR","msg":"failed to post cHAT","!BADKEY":"pq: invalid input syntax for type uuid: \"\""}

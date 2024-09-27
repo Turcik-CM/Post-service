@@ -21,7 +21,7 @@ func TestCreateComment(t *testing.T) {
 
 	res := pb.CommentPost{
 		UserId:    uuid.New().String(),
-		PostId:    "ff3c798c-fa32-41d6-88e0-dcf5287aa5b2",
+		PostId:    "a2083af4-ee47-47f9-b4ed-096c3b75934a",
 		Content:   "Toshket",
 		CreatedAt: time.Now().String(),
 	}
@@ -42,8 +42,8 @@ func TestUpdateComment(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.UpdateAComment{
-		UserId:  "43cd2da3-02bb-402b-872b-1f7a50a8a030",
-		Id:      "f78fa63b-20d8-4adc-b9e3-d3c26f6cf8ee",
+		UserId:  "650cbaea-8ab4-4930-aa32-aeb098956562",
+		Id:      "fa10902e-b599-4850-9024-8c20163b9634",
 		Content: "dddd",
 	}
 	comment := NewCommentStorage(db)
@@ -61,7 +61,7 @@ func TestGetCommentByID(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.CommentId{
-		CommentId: "94eda20d-7a75-4cdd-9a2d-ca4c97089626",
+		CommentId: "fa10902e-b599-4850-9024-8c20163b9634",
 	}
 	comment := NewCommentStorage(db)
 	req, err := comment.GetCommentByID(&res)
@@ -112,7 +112,7 @@ func TestGetCommentByUsername(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.Username{
-		Username: "43cd2da3-02bb-402b-872b-1f7a50a8a030",
+		Username: "650cbaea-8ab4-4930-aa32-aeb098956562",
 	}
 
 	comment := NewCommentStorage(db)

@@ -1,10 +1,8 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
 	"github.com/spf13/cast"
 
-	"log"
 	"os"
 )
 
@@ -20,14 +18,14 @@ type Config struct {
 }
 
 func Load() Config {
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	//if err := godotenv.Load(".env"); err != nil {
+	//	log.Fatal("Error loading .env file")
+	//}
 
 	config := Config{}
 
 	config.USER_PORT = cast.ToString(coalesce("USER_PORT", ":50050"))
-	config.POST_PORT = cast.ToString(coalesce("POST_PORT", ":7070"))
+	config.POST_PORT = cast.ToString(coalesce("POST_PORT", ":50055"))
 	config.DB_PORT = cast.ToString(coalesce("DB_PORT", "5432"))
 	config.DB_HOST = cast.ToString(coalesce("DB_HOST", "localhost"))
 	config.DB_USER = cast.ToString(coalesce("DB_USER", "postgres"))

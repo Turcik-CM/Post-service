@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	pb "post-servic/genproto/post"
 )
 
@@ -70,6 +71,7 @@ func (p *PostService) RemoveImageFromPost(ctx context.Context, in *pb.ImageUrl) 
 
 func (p *PostService) GetPostByCountry(ctx context.Context, in *pb.PostCountry) (*pb.PostListResponse, error) {
 	res, err := p.post.GetPostByCountry(in)
+	fmt.Println(in)
 	if err != nil {
 		p.logger.Error("failed to GetPostByCountry", err)
 		return nil, err
