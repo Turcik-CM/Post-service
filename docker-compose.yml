@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  turk-post:
+    build: .
+    ports:
+      - 50055:50055
+    networks:
+      - TurkNet
+
+networks:
+  TurkNet:
+    name: TurkNet
+    driver: bridge
