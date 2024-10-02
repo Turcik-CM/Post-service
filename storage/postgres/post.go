@@ -37,13 +37,13 @@ func (p *PostStorage) CreatePost(in *pb.Post) (*pb.PostResponse, error) {
 	fmt.Println("dodi")
 
 	fmt.Println("dodi")
-	query := `INSERT INTO posts (user_id, country, location, title, hashtag, content, description) 
-	          VALUES ($1, $2, $3, $4, $5, $6, $7) 
-	          RETURNING id, user_id, country, location, title, hashtag, content, created_at, description`
+	query := `INSERT INTO posts (user_id, country, location, title, hashtag, content, description, image_url) 
+	          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+	          RETURNING id, user_id, country, location, title, hashtag, content, created_at, description, image_url`
 
 	var res pb.PostResponse
 	err = p.db.QueryRowContext(context.Background(), query,
-		in.UserId, in.Country, in.Location, in.Title, in.Hashtag, in.Content, in.Description).Scan(
+		in.UserId, in.Country, in.Location, in.Title, in.Hashtag, in.Content, in.Description, in.ImageUrl).Scan(
 		&res.Id,
 		&res.UserId,
 		&res.Country,
@@ -52,7 +52,8 @@ func (p *PostStorage) CreatePost(in *pb.Post) (*pb.PostResponse, error) {
 		&res.Hashtag,
 		&res.Content,
 		&res.CreatedAt,
-		&res.Description)
+		&res.Description,
+		&res.ImageUrl)
 	fmt.Println("dodi")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create post: %v", err)

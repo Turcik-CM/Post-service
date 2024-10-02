@@ -25,6 +25,7 @@ func TestCreatePost(t *testing.T) {
 		Title:       "1111",
 		Hashtag:     "1111",
 		Content:     "1111",
+		ImageUrl:    "1111",
 		Description: "nimadur",
 	}
 
