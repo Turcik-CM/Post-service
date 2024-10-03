@@ -36,6 +36,10 @@ func (p *PostStorage) CreatePost(in *pb.Post) (*pb.PostResponse, error) {
 	}
 	fmt.Println("dodi")
 
+	if in.ImageUrl == "" {
+		in.ImageUrl = "no image"
+	}
+
 	fmt.Println("dodi")
 	query := `INSERT INTO posts (user_id, country, location, title, hashtag, content, description, image_url) 
 	          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
