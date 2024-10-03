@@ -1,4 +1,5 @@
 CREATE TYPE content AS ENUM ('text', 'post', 'photo', 'video');
+CREATE TYPE notif AS ENUM ('message', 'post', 'like');
 
 CREATE TABLE IF NOT EXISTS hashtag
 (
@@ -11,7 +12,7 @@ CREATE TABLE IF NOT EXISTS countries
 (
     id          UUID DEFAULT gen_random_uuid(),
     country     VARCHAR PRIMARY KEY,
-    nationality VARCHAR ,
+    nationality VARCHAR,
     flag        VARCHAR
 );
 
@@ -20,7 +21,7 @@ CREATE TABLE IF NOT EXISTS posts
 (
     id          UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
     user_id     UUID    NOT NULL,
-    country VARCHAR REFERENCES countries (country),
+    country     VARCHAR REFERENCES countries (country),
     location    VARCHAR NOT NULL,
     title       VARCHAR NOT NULL,
     description VARCHAR NOT NULL,
@@ -51,8 +52,9 @@ CREATE TABLE IF NOT EXISTS likes
     UNIQUE (user_id, post_id)
 );
 
-CREATE TABLE IF NOT EXISTS comment_like (
-    user_id UUID NOT NULL,
+CREATE TABLE IF NOT EXISTS comment_like
+(
+    user_id    UUID NOT NULL,
     comment_id UUID REFERENCES comments (id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     UNIQUE (user_id, comment_id)
@@ -72,13 +74,24 @@ CREATE TABLE IF NOT EXISTS chat
 
 CREATE TABLE messages
 (
-    id              UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
-    chat_id uuid REFERENCES chat (id) ON DELETE CASCADE,
-    sender_id       UUID,
-    content_type    content NOT NULL,
-    content         TEXT NOT NULL,
-    created_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_aut     TIMESTAMP WITH TIME ZONE,
-    is_read         BOOLEAN                  DEFAULT FALSE,
-    deleted_at BIGINT                   DEFAULT 0
+    id           UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
+    chat_id      uuid REFERENCES chat (id) ON DELETE CASCADE,
+    sender_id    UUID,
+    content_type content NOT NULL,
+    content      TEXT    NOT NULL,
+    created_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_aut  TIMESTAMP WITH TIME ZONE,
+    is_read      BOOLEAN                  DEFAULT FALSE,
+    deleted_at   BIGINT                   DEFAULT 0
+);
+
+CREATE TABLE notification
+(
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    from_who UUID NOT NULL,
+    to_who UUID NOT NULL,
+    message VARCHAR NOT NULL,
+    notification_type notif,
+    is_read bool default 'f',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
