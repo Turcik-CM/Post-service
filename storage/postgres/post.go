@@ -156,7 +156,7 @@ func (p *PostStorage) GetPostByID(in *pb.PostId) (*pb.PostResponse, error) {
 }
 
 func (p *PostStorage) ListPosts(in *pb.PostList) (*pb.PostListResponse, error) {
-	query := "SELECT id, user_id, country, location, title, hashtag, content, image_url, description, created_at, updated_at FROM posts WHERE deleted_at = 0"
+	query := "SELECT COUNT(*) OVER(), id, user_id, country, location, title, hashtag, content, image_url, description, created_at, updated_at FROM posts WHERE deleted_at = 0"
 	args := []interface{}{}
 
 	if in.Hashtag != "" {
@@ -184,10 +184,11 @@ func (p *PostStorage) ListPosts(in *pb.PostList) (*pb.PostListResponse, error) {
 	}
 	defer rows.Close()
 
+	var total string
 	var posts []*pb.PostResponse
 	for rows.Next() {
 		var post pb.PostResponse
-		if err := rows.Scan(&post.Id, &post.UserId, &post.Country, &post.Location, &post.Title,
+		if err := rows.Scan(&total, &post.Id, &post.UserId, &post.Country, &post.Location, &post.Title,
 			&post.Hashtag, &post.Content, &post.ImageUrl, &post.Description, &post.CreatedAt, &post.UpdatedAt); err != nil {
 			return nil, err
 		}
@@ -195,7 +196,8 @@ func (p *PostStorage) ListPosts(in *pb.PostList) (*pb.PostListResponse, error) {
 	}
 
 	return &pb.PostListResponse{
-		Post: posts,
+		Post:  posts,
+		Total: total,
 	}, nil
 }
 

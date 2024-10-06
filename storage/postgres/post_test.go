@@ -87,8 +87,8 @@ func TestListPosts(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.PostList{
-		Limit:   5,
-		Country: "Uzbekistan",
+		Limit: 5,
+		//Country: "Uzbekistan",
 	}
 
 	post := NewPostStorage(db)

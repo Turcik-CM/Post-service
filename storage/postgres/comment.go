@@ -113,7 +113,7 @@ func (c *CommentStorage) GetCommentByUsername(in *pb.Username) (*pb.CommentRespo
 }
 
 func (c *CommentStorage) ListComments(in *pb.CommentList) (*pb.CommentsR, error) {
-	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE 1=1`
+	query := `SELECT COUNT(*) OVER(), id, user_id, post_id, content, created_at, updated_at FROM comments WHERE 1=1`
 	args := []interface{}{}
 	argIndex := 1
 
@@ -141,16 +141,20 @@ func (c *CommentStorage) ListComments(in *pb.CommentList) (*pb.CommentsR, error)
 	}
 	defer rows.Close()
 
+	var total string
 	var comments []*pb.CommentResponse
 	for rows.Next() {
 		var comment pb.CommentResponse
-		if err := rows.Scan(&comment.Id, &comment.UserId, &comment.PostId, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt); err != nil {
+		if err := rows.Scan(&total, &comment.Id, &comment.UserId, &comment.PostId, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt); err != nil {
 			return nil, err
 		}
 		comments = append(comments, &comment)
 	}
 
-	return &pb.CommentsR{Comments: comments}, nil
+	return &pb.CommentsR{
+		Comments: comments,
+		Total:    total,
+	}, nil
 }
 
 func (c *CommentStorage) GetCommentByPostID(in *pb.PostId) (*pb.CommentsR, error) {

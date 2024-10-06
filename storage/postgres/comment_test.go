@@ -131,8 +131,8 @@ func TestListComments(t *testing.T) {
 	}
 
 	res := pb.CommentList{
-		PostId: "ff3c798c-fa32-41d6-88e0-dcf5287aa5b2",
-		Limit:  1,
+		//PostId: "ff3c798c-fa32-41d6-88e0-dcf5287aa5b2",
+		Limit: 3,
 		//Offset: 0,
 	}
 	comment := NewCommentStorage(db)
