@@ -117,14 +117,12 @@ func (c *CommentStorage) ListComments(in *pb.CommentList) (*pb.CommentsR, error)
 	args := []interface{}{}
 	argIndex := 1
 
-	// Dinamik filtrlar
 	if in.PostId != "" {
 		query += fmt.Sprintf(" AND post_id = $%d", argIndex)
 		args = append(args, in.PostId)
 		argIndex++
 	}
 
-	// Limit va Offset qo'shish
 	if in.Limit > 0 {
 		query += fmt.Sprintf(" LIMIT $%d", argIndex)
 		args = append(args, in.Limit)
@@ -137,14 +135,12 @@ func (c *CommentStorage) ListComments(in *pb.CommentList) (*pb.CommentsR, error)
 		argIndex++
 	}
 
-	// So'rov bajarish
 	rows, err := c.db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	// Natijalarni olish
 	var comments []*pb.CommentResponse
 	for rows.Next() {
 		var comment pb.CommentResponse
