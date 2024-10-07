@@ -21,11 +21,11 @@ func TestCreatePost(t *testing.T) {
 	res := pb.Post{
 		UserId:      uuid.New().String(),
 		Country:     "Uzbekistan",
-		Location:    "1111",
-		Title:       "1111",
-		Hashtag:     "1111",
-		Content:     "1111",
-		ImageUrl:    "1111",
+		Location:    "11111",
+		Title:       "11111",
+		Hashtag:     "11111",
+		Content:     "11111",
+		ImageUrl:    "11111",
 		Description: "nimadur",
 	}
 
@@ -46,7 +46,7 @@ func TestUpdatePost(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.UpdateAPost{
-		Id:      "2a05b627-d55b-42f3-b497-fed2b014fd1b",
+		Id:      "f380a915-4bd8-434e-a699-7b82bbfb3906",
 		Country: "Uzbekistan",
 		Title:   "dodi2",
 		Content: "Uzbekistan",
@@ -68,7 +68,7 @@ func TestGetPostByID(t *testing.T) {
 	}
 
 	res := pb.PostId{
-		Id: "2a05b627-d55b-42f3-b497-fed2b014fd1b",
+		Id: "f380a915-4bd8-434e-a699-7b82bbfb3906",
 	}
 
 	post := NewPostStorage(db)
@@ -87,8 +87,8 @@ func TestListPosts(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.PostList{
-		Limit: 5,
-		//Country: "Uzbekistan",
+		//Limit: 5,
+		Country: "zbe",
 	}
 
 	post := NewPostStorage(db)
@@ -107,7 +107,7 @@ func TestDeletePost(t *testing.T) {
 	}
 
 	res := pb.PostId{
-		Id: "a2083af4-ee47-47f9-b4ed-096c3b75934a",
+		Id: "f380a915-4bd8-434e-a699-7b82bbfb3906",
 	}
 
 	post := NewPostStorage(db)
@@ -126,7 +126,7 @@ func TestAddImageToPost(t *testing.T) {
 	}
 
 	res := pb.ImageUrl{
-		PostId: "2a05b627-d55b-42f3-b497-fed2b014fd1b",
+		PostId: "f380a915-4bd8-434e-a699-7b82bbfb3906",
 		Url:    "dodi",
 	}
 
@@ -135,7 +135,7 @@ func TestAddImageToPost(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(req)
+	fmt.Println(req, "ssssssssss")
 }
 
 func TestRemoveImageFromPost(t *testing.T) {
@@ -145,7 +145,7 @@ func TestRemoveImageFromPost(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.ImageUrl{
-		PostId: "2a05b627-d55b-42f3-b497-fed2b014fd1b",
+		PostId: "f380a915-4bd8-434e-a699-7b82bbfb3906",
 	}
 	post := NewPostStorage(db)
 	req, err := post.RemoveImageFromPost(&res)

@@ -18,12 +18,23 @@ func NewLikeStorage(db *sqlx.DB) storage.LikeStorage {
 }
 
 func (l *LikeStorage) AddLikePost(in *pb.LikePost) (*pb.LikeResponse, error) {
+	h := NewPostStorage(l.db)
+
+	o := pb.PostId{
+		Id: in.PostId,
+	}
+
+	_, err := h.GetPostByID(&o)
+	if err != nil {
+		return nil, err
+	}
+
 	query := `INSERT INTO likes (user_id, post_id, created_at) 
-	          VALUES ($1, $2, NOW()) 
+	          VALUES ($1, $2, NOW())
 	          RETURNING user_id, post_id`
 
 	var res pb.LikeResponse
-	err := l.db.QueryRowContext(context.Background(), query, in.UserId, in.PostId).Scan(
+	err = l.db.QueryRowContext(context.Background(), query, in.UserId, in.PostId).Scan(
 		&res.UserId, &res.PostId)
 
 	if err != nil {
@@ -34,9 +45,20 @@ func (l *LikeStorage) AddLikePost(in *pb.LikePost) (*pb.LikeResponse, error) {
 }
 
 func (l *LikeStorage) DeleteLikePost(in *pb.LikePost) (*pb.Message, error) {
+	h := NewPostStorage(l.db)
+
+	o := pb.PostId{
+		Id: in.PostId,
+	}
+
+	_, err := h.GetPostByID(&o)
+	if err != nil {
+		return nil, err
+	}
+
 	query := `DELETE FROM likes WHERE user_id = $1 AND post_id = $2`
 
-	_, err := l.db.ExecContext(context.Background(), query, in.UserId, in.PostId)
+	_, err = l.db.ExecContext(context.Background(), query, in.UserId, in.PostId)
 	if err != nil {
 		return nil, err
 	}
@@ -47,12 +69,23 @@ func (l *LikeStorage) DeleteLikePost(in *pb.LikePost) (*pb.Message, error) {
 }
 
 func (l *LikeStorage) AddLikeComment(in *pb.LikeCommit) (*pb.LikeComResponse, error) {
+	h := NewCommentStorage(l.db)
+
+	o := pb.CommentId{
+		CommentId: in.CommitId,
+	}
+
+	_, err := h.GetCommentByID(&o)
+	if err != nil {
+		return nil, err
+	}
+
 	query := `INSERT INTO comment_like (user_id, comment_id, created_at) 
 	          VALUES ($1, $2, NOW()) 
 	          RETURNING user_id, comment_id`
 
 	var res pb.LikeComResponse
-	err := l.db.QueryRowContext(context.Background(), query, in.UserId, in.CommitId).Scan(
+	err = l.db.QueryRowContext(context.Background(), query, in.UserId, in.CommitId).Scan(
 		&res.UserId, &res.CommitId)
 
 	if err != nil {
@@ -63,9 +96,20 @@ func (l *LikeStorage) AddLikeComment(in *pb.LikeCommit) (*pb.LikeComResponse, er
 }
 
 func (l *LikeStorage) DeleteLikeComment(in *pb.LikeCommit) (*pb.Message, error) {
+	h := NewCommentStorage(l.db)
+
+	o := pb.CommentId{
+		CommentId: in.CommitId,
+	}
+
+	_, err := h.GetCommentByID(&o)
+	if err != nil {
+		return nil, err
+	}
+
 	query := `DELETE FROM comment_like WHERE user_id = $1 AND comment_id = $2`
 
-	_, err := l.db.ExecContext(context.Background(), query, in.UserId, in.CommitId)
+	_, err = l.db.ExecContext(context.Background(), query, in.UserId, in.CommitId)
 	if err != nil {
 		return nil, err
 	}

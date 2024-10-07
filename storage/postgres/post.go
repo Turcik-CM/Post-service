@@ -121,7 +121,7 @@ func (p *PostStorage) UpdatePost(in *pb.UpdateAPost) (*pb.PostResponse, error) {
 		return nil, fmt.Errorf("hech qanday maydon yangilanmadi")
 	}
 
-	query += fmt.Sprintf(" WHERE id = $%d RETURNING id, user_id, country, location, title, hashtag, content, image_url, description,  created_at, updated_at", argIndex)
+	query += fmt.Sprintf(" WHERE id = $%d  and deleted_at = 0 RETURNING id, user_id, country, location, title, hashtag, content, image_url, description,  created_at, updated_at", argIndex)
 	args = append(args, in.Id)
 
 	fmt.Println("dodi")
@@ -139,7 +139,7 @@ func (p *PostStorage) UpdatePost(in *pb.UpdateAPost) (*pb.PostResponse, error) {
 
 func (p *PostStorage) GetPostByID(in *pb.PostId) (*pb.PostResponse, error) {
 	query := `SELECT id, user_id, country, location, title, hashtag, content, image_url, description, created_at, updated_at 
-	          FROM posts WHERE id = $1`
+	          FROM posts WHERE id = $1  and deleted_at = 0`
 
 	var res pb.PostResponse
 	err := p.db.QueryRowContext(context.Background(), query, in.Id).Scan(
@@ -147,7 +147,7 @@ func (p *PostStorage) GetPostByID(in *pb.PostId) (*pb.PostResponse, error) {
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil
+			return nil, err
 		}
 		return nil, err
 	}
@@ -156,31 +156,39 @@ func (p *PostStorage) GetPostByID(in *pb.PostId) (*pb.PostResponse, error) {
 }
 
 func (p *PostStorage) ListPosts(in *pb.PostList) (*pb.PostListResponse, error) {
-	query := "SELECT COUNT(*) OVER(), id, user_id, country, location, title, hashtag, content, image_url, description, created_at, updated_at FROM posts WHERE deleted_at = 0"
+	query := `
+		SELECT COUNT(*) OVER(), id, user_id, country, location, title, hashtag, content, image_url, description, created_at, updated_at 
+		FROM posts 
+		WHERE deleted_at = 0`
 	args := []interface{}{}
+	argIndex := 1
 
 	if in.Hashtag != "" {
-		query += " AND hashtag = $1"
+		query += fmt.Sprintf(" AND hashtag ILIKE '%%' || $%d || '%%'", argIndex)
 		args = append(args, in.Hashtag)
+		argIndex++
 	}
 
 	if in.Country != "" {
-		query += " AND country = $" + fmt.Sprintf("%d", len(args)+1)
+		query += fmt.Sprintf(" AND country ILIKE '%%' || $%d || '%%'", argIndex)
 		args = append(args, in.Country)
+		argIndex++
 	}
 
 	if in.Limit > 0 {
-		query += " LIMIT $" + fmt.Sprintf("%d", len(args)+1)
+		query += fmt.Sprintf(" LIMIT $%d", argIndex)
 		args = append(args, in.Limit)
+		argIndex++
 	}
+
 	if in.Offset >= 0 {
-		query += " OFFSET $" + fmt.Sprintf("%d", len(args)+1)
+		query += fmt.Sprintf(" OFFSET $%d", argIndex)
 		args = append(args, in.Offset)
 	}
 
 	rows, err := p.db.Query(query, args...)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error querying posts: %v", err)
 	}
 	defer rows.Close()
 
@@ -190,7 +198,7 @@ func (p *PostStorage) ListPosts(in *pb.PostList) (*pb.PostListResponse, error) {
 		var post pb.PostResponse
 		if err := rows.Scan(&total, &post.Id, &post.UserId, &post.Country, &post.Location, &post.Title,
 			&post.Hashtag, &post.Content, &post.ImageUrl, &post.Description, &post.CreatedAt, &post.UpdatedAt); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error scanning post: %v", err)
 		}
 		posts = append(posts, &post)
 	}
@@ -216,7 +224,7 @@ func (p *PostStorage) DeletePost(in *pb.PostId) (*pb.Message, error) {
 }
 
 func (p *PostStorage) AddImageToPost(in *pb.ImageUrl) (*pb.PostResponse, error) {
-	query := `UPDATE posts SET image_url = $1, updated_at = $2 WHERE id = $3`
+	query := `UPDATE posts SET image_url = $1, updated_at = $2 WHERE id = $3 and deleted_at = 0`
 
 	fmt.Println("dodi")
 
@@ -237,7 +245,7 @@ func (p *PostStorage) AddImageToPost(in *pb.ImageUrl) (*pb.PostResponse, error) 
 	return res, nil
 }
 func (p *PostStorage) RemoveImageFromPost(in *pb.ImageUrl) (*pb.Message, error) {
-	query := `UPDATE posts SET image_url = 'no image' WHERE id = $1 RETURNING id`
+	query := `UPDATE posts SET image_url = 'no image' WHERE id = $1 and deleted_at = 0 RETURNING id`
 
 	var postId string
 	err := p.db.QueryRowContext(context.Background(), query, in.PostId).Scan(&postId)
@@ -252,7 +260,7 @@ func (p *PostStorage) RemoveImageFromPost(in *pb.ImageUrl) (*pb.Message, error) 
 
 func (p *PostStorage) GetPostByCountry(in *pb.PostCountry) (*pb.PostListResponse, error) {
 	query := `SELECT id, user_id, country, location, title, hashtag, content, image_url, description, created_at, updated_at 
-	          FROM posts WHERE country = $1`
+	          FROM posts WHERE country = $1  and deleted_at = 0`
 
 	rows, err := p.db.QueryContext(context.Background(), query, in.Country)
 	if err != nil {
