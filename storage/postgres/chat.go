@@ -94,7 +94,7 @@ func (c *ChatStorage) GetChatMessages(in *pb.List) (*pb.MassageResponseList, err
 }
 
 func (c *ChatStorage) MessageMarcTrue(in *pb.MassageTrue) (*pb.Message, error) {
-	query := `UPDATE messages SET is_read = $1 WHERE chat_id = $2 RETURNING id`
+	query := `UPDATE messages SET is_read = $1 WHERE chat_id = $2 and deleted_at = 0 RETURNING id`
 
 	var postId string
 	err := c.db.QueryRowContext(context.Background(), query, true, in.ChatId).Scan(&postId)
@@ -108,7 +108,7 @@ func (c *ChatStorage) MessageMarcTrue(in *pb.MassageTrue) (*pb.Message, error) {
 }
 
 func (c *ChatStorage) GetUserChats(in *pb.Username) (*pb.ChatResponseList, error) {
-	query := `SELECT id, user1_id, user2_id FROM chat WHERE user1_id = $1 or user2_id = $1 ORDER BY created_at DESC`
+	query := `SELECT id, user1_id, user2_id FROM chat WHERE user1_id = $1 and deleted_at = 0 or user2_id = $1 ORDER BY created_at DESC`
 
 	rows, err := c.db.QueryContext(context.Background(), query, in.Username)
 	if err != nil {
@@ -137,7 +137,7 @@ func (c *ChatStorage) GetUserChats(in *pb.Username) (*pb.ChatResponseList, error
 
 func (c *ChatStorage) GetUnreadMessages(in *pb.ChatId) (*pb.MassageResponseList, error) {
 	query := `SELECT id, chat_id, sender_id, content_type, content, created_at,  is_read
-	          FROM messages WHERE chat_id = $1`
+	          FROM messages WHERE chat_id = $1 and deleted_at = 0`
 
 	rows, err := c.db.QueryContext(context.Background(), query, in.ChatId)
 	if err != nil {
@@ -166,7 +166,7 @@ func (c *ChatStorage) GetUnreadMessages(in *pb.ChatId) (*pb.MassageResponseList,
 
 func (c *ChatStorage) UpdateMessage(in *pb.UpdateMs) (*pb.MassageResponse, error) {
 	query := `SELECT content_type
-	          FROM messages WHERE id = $1`
+	          FROM messages WHERE id = $1 and deleted_at = 0`
 
 	var content_type string
 	var res pb.MassageResponse

@@ -28,6 +28,17 @@ func (c *CommentStorage) CreateComment(in *pb.CommentPost) (*pb.CommentResponse,
 	createdAt := time.Now()
 	updatedAt := createdAt
 
+	h := NewPostStorage(c.db)
+
+	res := pb.PostId{
+		Id: in.PostId,
+	}
+
+	_, err := h.GetPostByID(&res)
+	if err != nil {
+		return nil, err
+	}
+
 	query := `
 		INSERT INTO comments (id, user_id, post_id, content, created_at, updated_at) 
 		VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
@@ -81,7 +92,7 @@ func (c *CommentStorage) UpdateComment(in *pb.UpdateAComment) (*pb.CommentRespon
 }
 
 func (c *CommentStorage) GetCommentByID(in *pb.CommentId) (*pb.CommentResponse, error) {
-	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE id = $1`
+	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE id = $1 AND deleted_at = 0`
 
 	var comment pb.CommentResponse
 	if err := c.db.QueryRow(query, in.CommentId).Scan(&comment.Id, &comment.UserId, &comment.PostId, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt); err != nil {
@@ -92,7 +103,7 @@ func (c *CommentStorage) GetCommentByID(in *pb.CommentId) (*pb.CommentResponse, 
 }
 
 func (c *CommentStorage) DeleteComment(in *pb.CommentId) (*pb.Message, error) {
-	query := `DELETE FROM comments WHERE id = $1`
+	query := `DELETE FROM comments WHERE id = $1 AND deleted_at = 0`
 
 	if _, err := c.db.Exec(query, in.CommentId); err != nil {
 		return nil, err
@@ -102,7 +113,7 @@ func (c *CommentStorage) DeleteComment(in *pb.CommentId) (*pb.Message, error) {
 }
 
 func (c *CommentStorage) GetCommentByUsername(in *pb.Username) (*pb.CommentResponse, error) {
-	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE user_id = $1`
+	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE user_id = $1 AND deleted_at = 0`
 
 	var comment pb.CommentResponse
 	if err := c.db.QueryRow(query, in.Username).Scan(&comment.Id, &comment.UserId, &comment.PostId, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt); err != nil {
@@ -113,18 +124,16 @@ func (c *CommentStorage) GetCommentByUsername(in *pb.Username) (*pb.CommentRespo
 }
 
 func (c *CommentStorage) ListComments(in *pb.CommentList) (*pb.CommentsR, error) {
-	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE 1=1`
+	query := `SELECT COUNT(*) OVER(), id, user_id, post_id, content, created_at, updated_at FROM comments WHERE deleted_at = 0`
 	args := []interface{}{}
 	argIndex := 1
 
-	// Dinamik filtrlar
 	if in.PostId != "" {
 		query += fmt.Sprintf(" AND post_id = $%d", argIndex)
 		args = append(args, in.PostId)
 		argIndex++
 	}
 
-	// Limit va Offset qo'shish
 	if in.Limit > 0 {
 		query += fmt.Sprintf(" LIMIT $%d", argIndex)
 		args = append(args, in.Limit)
@@ -137,28 +146,30 @@ func (c *CommentStorage) ListComments(in *pb.CommentList) (*pb.CommentsR, error)
 		argIndex++
 	}
 
-	// So'rov bajarish
 	rows, err := c.db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	// Natijalarni olish
+	var total string
 	var comments []*pb.CommentResponse
 	for rows.Next() {
 		var comment pb.CommentResponse
-		if err := rows.Scan(&comment.Id, &comment.UserId, &comment.PostId, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt); err != nil {
+		if err := rows.Scan(&total, &comment.Id, &comment.UserId, &comment.PostId, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt); err != nil {
 			return nil, err
 		}
 		comments = append(comments, &comment)
 	}
 
-	return &pb.CommentsR{Comments: comments}, nil
+	return &pb.CommentsR{
+		Comments: comments,
+		Total:    total,
+	}, nil
 }
 
 func (c *CommentStorage) GetCommentByPostID(in *pb.PostId) (*pb.CommentsR, error) {
-	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE post_id = $1`
+	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE post_id = $1 AND deleted_at = 0`
 	rows, err := c.db.Query(query, in.Id)
 	if err != nil {
 		return nil, err
@@ -178,7 +189,7 @@ func (c *CommentStorage) GetCommentByPostID(in *pb.PostId) (*pb.CommentsR, error
 }
 
 func (c *CommentStorage) GetAllUserComments(in *pb.Username) (*pb.CommentsR, error) {
-	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE user_id = $1`
+	query := `SELECT id, user_id, post_id, content, created_at, updated_at FROM comments WHERE user_id = $1 AND deleted_at = 0`
 	rows, err := c.db.Query(query, in.Username)
 	if err != nil {
 		return nil, err

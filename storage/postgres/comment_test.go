@@ -21,7 +21,7 @@ func TestCreateComment(t *testing.T) {
 
 	res := pb.CommentPost{
 		UserId:    uuid.New().String(),
-		PostId:    "a2083af4-ee47-47f9-b4ed-096c3b75934a",
+		PostId:    "f380a915-4bd8-434e-a699-7b82bbfb3906",
 		Content:   "Toshket",
 		CreatedAt: time.Now().String(),
 	}
@@ -42,9 +42,9 @@ func TestUpdateComment(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.UpdateAComment{
-		UserId:  "650cbaea-8ab4-4930-aa32-aeb098956562",
-		Id:      "fa10902e-b599-4850-9024-8c20163b9634",
-		Content: "dddd",
+		UserId:  "5d2b4c0d-7fad-4d8a-b708-7124746ec4cd",
+		Id:      "b894b386-c4a1-45df-8c89-d5edd2e18201",
+		Content: "Toshket",
 	}
 	comment := NewCommentStorage(db)
 	req, err := comment.UpdateComment(&res)
@@ -61,7 +61,7 @@ func TestGetCommentByID(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.CommentId{
-		CommentId: "fa10902e-b599-4850-9024-8c20163b9634",
+		CommentId: "b894b386-c4a1-45df-8c89-d5edd2e18201",
 	}
 	comment := NewCommentStorage(db)
 	req, err := comment.GetCommentByID(&res)
@@ -78,7 +78,7 @@ func TestDeleteComment(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.CommentId{
-		CommentId: "94eda20d-7a75-4cdd-9a2d-ca4c97089626",
+		CommentId: "b894b386-c4a1-45df-8c89-d5edd2e18201",
 	}
 	comment := NewCommentStorage(db)
 	req, err := comment.DeleteComment(&res)
@@ -95,7 +95,7 @@ func TestGetAllUserComments(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.Username{
-		Username: "5cb6e285-050b-42ed-b1dd-6bf549a14d6e",
+		Username: "c732f495-bc83-492a-bdae-e98fc430345c",
 	}
 	comment := NewCommentStorage(db)
 	req, err := comment.GetAllUserComments(&res)
@@ -112,7 +112,7 @@ func TestGetCommentByUsername(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.Username{
-		Username: "650cbaea-8ab4-4930-aa32-aeb098956562",
+		Username: "c732f495-bc83-492a-bdae-e98fc430345c",
 	}
 
 	comment := NewCommentStorage(db)
@@ -131,8 +131,8 @@ func TestListComments(t *testing.T) {
 	}
 
 	res := pb.CommentList{
-		PostId: "ff3c798c-fa32-41d6-88e0-dcf5287aa5b2",
-		Limit:  1,
+		//PostId: "ff3c798c-fa32-41d6-88e0-dcf5287aa5b2",
+		Limit: 3,
 		//Offset: 0,
 	}
 	comment := NewCommentStorage(db)
@@ -150,7 +150,7 @@ func TestGetCommentByPostID(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.PostId{
-		Id: "ff3c798c-fa32-41d6-88e0-dcf5287aa5b2",
+		Id: "f380a915-4bd8-434e-a699-7b82bbfb3906",
 	}
 	comment := NewCommentStorage(db)
 	req, err := comment.GetCommentByPostID(&res)
@@ -168,7 +168,7 @@ func TestGetMostlikeCommentPost(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.PostId{
-		Id: "ff3c798c-fa32-41d6-88e0-dcf5287aa5b2",
+		Id: "f380a915-4bd8-434e-a699-7b82bbfb3906",
 	}
 	comment := NewCommentStorage(db)
 	req, err := comment.GetMostlikeCommentPost(&res)

@@ -18,7 +18,7 @@ func TestAddLikePost(t *testing.T) {
 
 	res := pb.LikePost{
 		UserId: uuid.New().String(),
-		PostId: "a2083af4-ee47-47f9-b4ed-096c3b75934a",
+		PostId: "f380a915-4bd8-434e-a699-7b82bbfb3906",
 	}
 
 	like := NewLikeStorage(db)
@@ -37,8 +37,8 @@ func TestDeleteLikePost(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.LikePost{
-		UserId: "08d32f24-fcc7-4238-aa75-6f7be3787e5d",
-		PostId: "0a167e10-a32c-4df7-b88e-03c0e00301a5",
+		UserId: "f1225c22-48c6-4dc3-bfe6-5c6d48f03a2a",
+		PostId: "f380a915-4bd8-434e-a699-7b82bbfb3906",
 	}
 
 	like := NewLikeStorage(db)
@@ -57,8 +57,8 @@ func TestAddLikeComment(t *testing.T) {
 	}
 
 	res := pb.LikePost{
-		UserId: "2b1b7f64-aaf3-4edc-855b-59482d5ed687",
-		PostId: "a2083af4-ee47-47f9-b4ed-096c3b75934a",
+		UserId: "f1225c22-48c6-4dc3-bfe6-5c6d48f03a2a",
+		PostId: "f380a915-4bd8-434e-a699-7b82bbfb3906",
 	}
 
 	like := NewLikeStorage(db)
@@ -75,12 +75,12 @@ func TestDeleteLikeComment(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	res := pb.LikePost{
-		UserId: "08d32f24-fcc7-4238-aa75-6f7be3787e5d",
-		PostId: "0a167e10-a32c-4df7-b88e-03c0e00301a5",
+	res := pb.LikeCommit{
+		UserId:   "c732f495-bc83-492a-bdae-e98fc430345c",
+		CommitId: "32a94376-4946-42cf-8e34-9b7f288539b6",
 	}
 	like := NewLikeStorage(db)
-	req, err := like.DeleteLikePost(&res)
+	req, err := like.DeleteLikeComment(&res)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -94,7 +94,7 @@ func TestGetPostLikeCount(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := pb.PostId{
-		Id: "0a167e10-a32c-4df7-b88e-03c0e00301a5",
+		Id: "32a94376-4946-42cf-8e34-9b7f288539b6",
 	}
 	like := NewLikeStorage(db)
 	req, err := like.GetPostLikeCount(&res)
