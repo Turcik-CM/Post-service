@@ -5,7 +5,6 @@ drop table comment_like;
 drop table likes;
 drop table comments;
 drop table posts;
-drop table countries;
 drop table hashtag;
-drop type content;
 drop type notif;
+drop type content;
