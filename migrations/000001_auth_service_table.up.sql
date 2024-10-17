@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS hashtag
     description VARCHAR
 );
 
-CREATE TABLE IF NOT EXISTS countries
+CREATE TABLE IF NOT EXISTS  countries
 (
     id          UUID DEFAULT gen_random_uuid(),
     country     VARCHAR PRIMARY KEY,
