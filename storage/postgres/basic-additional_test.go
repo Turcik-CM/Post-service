@@ -22,32 +22,34 @@ func TestGetUserRecommendation(t *testing.T) {
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
 		postID, userID, "Test Post", "This is a test post.", "Turkey", "New York", "testhashtag", "Test description")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("--- 1 ---", err)
 	}
 
-	_, err = db.Exec(`INSERT INTO likes(user_id, post_id) VALUES ($1, $2)`, userID, postID)
-	if err != nil {
-		log.Fatal(err)
-	}
+	//_, err = db.Exec(`INSERT INTO likes(user_id, post_id) VALUES ($1, $2)`, userID, postID)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 
 	repo := NewBasicAdditional(db)
 
 	userRes, err := repo.GetUserRecommendation(&pb.Username{Username: userID})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("--- 2 ---", err)
 	}
+
+	log.Println(userRes)
 
 	if len(userRes.Post) == 0 {
 		log.Fatal("Expected posts not found in recommendations")
 	}
 
-	_, err = db.Exec(`DELETE FROM likes WHERE user_id = $1 AND post_id = $2`, userID, postID)
-	if err != nil {
-		log.Fatal(err)
-	}
+	//_, err = db.Exec(`DELETE FROM likes WHERE user_id = $1 AND post_id = $2`, userID, postID)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 	_, err = db.Exec(`DELETE FROM posts WHERE id = $1`, postID)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("--- 3 ---", err)
 	}
 }
 

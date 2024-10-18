@@ -19,20 +19,34 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	UserService_Create_FullMethodName             = "/user.UserService/Create"
-	UserService_GetProfile_FullMethodName         = "/user.UserService/GetProfile"
-	UserService_UpdateProfile_FullMethodName      = "/user.UserService/UpdateProfile"
-	UserService_ChangePassword_FullMethodName     = "/user.UserService/ChangePassword"
-	UserService_ChangeProfileImage_FullMethodName = "/user.UserService/ChangeProfileImage"
-	UserService_FetchUsers_FullMethodName         = "/user.UserService/FetchUsers"
-	UserService_ListOfFollowing_FullMethodName    = "/user.UserService/ListOfFollowing"
-	UserService_ListOfFollowers_FullMethodName    = "/user.UserService/ListOfFollowers"
-	UserService_DeleteUser_FullMethodName         = "/user.UserService/DeleteUser"
-	UserService_Follow_FullMethodName             = "/user.UserService/Follow"
-	UserService_Unfollow_FullMethodName           = "/user.UserService/Unfollow"
-	UserService_GetUserFollowers_FullMethodName   = "/user.UserService/GetUserFollowers"
-	UserService_GetUserFollows_FullMethodName     = "/user.UserService/GetUserFollows"
-	UserService_MostPopularUser_FullMethodName    = "/user.UserService/MostPopularUser"
+	UserService_Create_FullMethodName               = "/user.UserService/Create"
+	UserService_GetProfile_FullMethodName           = "/user.UserService/GetProfile"
+	UserService_UpdateProfile_FullMethodName        = "/user.UserService/UpdateProfile"
+	UserService_ChangePassword_FullMethodName       = "/user.UserService/ChangePassword"
+	UserService_ChangeProfileImage_FullMethodName   = "/user.UserService/ChangeProfileImage"
+	UserService_FetchUsers_FullMethodName           = "/user.UserService/FetchUsers"
+	UserService_ListOfFollowing_FullMethodName      = "/user.UserService/ListOfFollowing"
+	UserService_ListOfFollowers_FullMethodName      = "/user.UserService/ListOfFollowers"
+	UserService_DeleteUser_FullMethodName           = "/user.UserService/DeleteUser"
+	UserService_Follow_FullMethodName               = "/user.UserService/Follow"
+	UserService_Unfollow_FullMethodName             = "/user.UserService/Unfollow"
+	UserService_GetUserFollowers_FullMethodName     = "/user.UserService/GetUserFollowers"
+	UserService_GetUserFollows_FullMethodName       = "/user.UserService/GetUserFollows"
+	UserService_MostPopularUser_FullMethodName      = "/user.UserService/MostPopularUser"
+	UserService_Register_FullMethodName             = "/user.UserService/Register"
+	UserService_LoginEmail_FullMethodName           = "/user.UserService/LoginEmail"
+	UserService_LoginUsername_FullMethodName        = "/user.UserService/LoginUsername"
+	UserService_AcceptCodeToRegister_FullMethodName = "/user.UserService/AcceptCodeToRegister"
+	UserService_ForgotPassword_FullMethodName       = "/user.UserService/ForgotPassword"
+	UserService_RegisterAdmin_FullMethodName        = "/user.UserService/RegisterAdmin"
+	UserService_ResetPassword_FullMethodName        = "/user.UserService/ResetPassword"
+	UserService_GetUserByEmail_FullMethodName       = "/user.UserService/GetUserByEmail"
+	UserService_UpdatePassword_FullMethodName       = "/user.UserService/UpdatePassword"
+	UserService_AddNationality_FullMethodName       = "/user.UserService/AddNationality"
+	UserService_GetNationalityById_FullMethodName   = "/user.UserService/GetNationalityById"
+	UserService_ListNationalities_FullMethodName    = "/user.UserService/ListNationalities"
+	UserService_UpdateNationality_FullMethodName    = "/user.UserService/UpdateNationality"
+	UserService_DeleteNationality_FullMethodName    = "/user.UserService/DeleteNationality"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -57,6 +71,22 @@ type UserServiceClient interface {
 	GetUserFollowers(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Count, error)
 	GetUserFollows(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Count, error)
 	MostPopularUser(ctx context.Context, in *Void, opts ...grpc.CallOption) (*UserResponse, error)
+	// auth
+	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+	LoginEmail(ctx context.Context, in *LoginEmailRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	LoginUsername(ctx context.Context, in *LoginUsernameRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	AcceptCodeToRegister(ctx context.Context, in *AcceptCode, opts ...grpc.CallOption) (*RegisterResponse, error)
+	ForgotPassword(ctx context.Context, in *ForgotPasswordRequest, opts ...grpc.CallOption) (*Message, error)
+	RegisterAdmin(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error)
+	ResetPassword(ctx context.Context, in *ResetPassReq, opts ...grpc.CallOption) (*Message, error)
+	GetUserByEmail(ctx context.Context, in *Email, opts ...grpc.CallOption) (*GetProfileResponse, error)
+	UpdatePassword(ctx context.Context, in *UpdatePasswordReq, opts ...grpc.CallOption) (*Message, error)
+	// nationality
+	AddNationality(ctx context.Context, in *Nat, opts ...grpc.CallOption) (*Nationality, error)
+	GetNationalityById(ctx context.Context, in *NId, opts ...grpc.CallOption) (*Nationality, error)
+	ListNationalities(ctx context.Context, in *Pagination, opts ...grpc.CallOption) (*Nationalities, error)
+	UpdateNationality(ctx context.Context, in *Nationality, opts ...grpc.CallOption) (*Void, error)
+	DeleteNationality(ctx context.Context, in *NId, opts ...grpc.CallOption) (*Void, error)
 }
 
 type userServiceClient struct {
@@ -207,6 +237,146 @@ func (c *userServiceClient) MostPopularUser(ctx context.Context, in *Void, opts 
 	return out, nil
 }
 
+func (c *userServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RegisterResponse)
+	err := c.cc.Invoke(ctx, UserService_Register_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) LoginEmail(ctx context.Context, in *LoginEmailRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LoginResponse)
+	err := c.cc.Invoke(ctx, UserService_LoginEmail_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) LoginUsername(ctx context.Context, in *LoginUsernameRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LoginResponse)
+	err := c.cc.Invoke(ctx, UserService_LoginUsername_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) AcceptCodeToRegister(ctx context.Context, in *AcceptCode, opts ...grpc.CallOption) (*RegisterResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RegisterResponse)
+	err := c.cc.Invoke(ctx, UserService_AcceptCodeToRegister_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ForgotPassword(ctx context.Context, in *ForgotPasswordRequest, opts ...grpc.CallOption) (*Message, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Message)
+	err := c.cc.Invoke(ctx, UserService_ForgotPassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) RegisterAdmin(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Message)
+	err := c.cc.Invoke(ctx, UserService_RegisterAdmin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ResetPassword(ctx context.Context, in *ResetPassReq, opts ...grpc.CallOption) (*Message, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Message)
+	err := c.cc.Invoke(ctx, UserService_ResetPassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetUserByEmail(ctx context.Context, in *Email, opts ...grpc.CallOption) (*GetProfileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetProfileResponse)
+	err := c.cc.Invoke(ctx, UserService_GetUserByEmail_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UpdatePassword(ctx context.Context, in *UpdatePasswordReq, opts ...grpc.CallOption) (*Message, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Message)
+	err := c.cc.Invoke(ctx, UserService_UpdatePassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) AddNationality(ctx context.Context, in *Nat, opts ...grpc.CallOption) (*Nationality, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Nationality)
+	err := c.cc.Invoke(ctx, UserService_AddNationality_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetNationalityById(ctx context.Context, in *NId, opts ...grpc.CallOption) (*Nationality, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Nationality)
+	err := c.cc.Invoke(ctx, UserService_GetNationalityById_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ListNationalities(ctx context.Context, in *Pagination, opts ...grpc.CallOption) (*Nationalities, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Nationalities)
+	err := c.cc.Invoke(ctx, UserService_ListNationalities_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UpdateNationality(ctx context.Context, in *Nationality, opts ...grpc.CallOption) (*Void, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Void)
+	err := c.cc.Invoke(ctx, UserService_UpdateNationality_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) DeleteNationality(ctx context.Context, in *NId, opts ...grpc.CallOption) (*Void, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Void)
+	err := c.cc.Invoke(ctx, UserService_DeleteNationality_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -229,6 +399,22 @@ type UserServiceServer interface {
 	GetUserFollowers(context.Context, *Id) (*Count, error)
 	GetUserFollows(context.Context, *Id) (*Count, error)
 	MostPopularUser(context.Context, *Void) (*UserResponse, error)
+	// auth
+	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
+	LoginEmail(context.Context, *LoginEmailRequest) (*LoginResponse, error)
+	LoginUsername(context.Context, *LoginUsernameRequest) (*LoginResponse, error)
+	AcceptCodeToRegister(context.Context, *AcceptCode) (*RegisterResponse, error)
+	ForgotPassword(context.Context, *ForgotPasswordRequest) (*Message, error)
+	RegisterAdmin(context.Context, *Message) (*Message, error)
+	ResetPassword(context.Context, *ResetPassReq) (*Message, error)
+	GetUserByEmail(context.Context, *Email) (*GetProfileResponse, error)
+	UpdatePassword(context.Context, *UpdatePasswordReq) (*Message, error)
+	// nationality
+	AddNationality(context.Context, *Nat) (*Nationality, error)
+	GetNationalityById(context.Context, *NId) (*Nationality, error)
+	ListNationalities(context.Context, *Pagination) (*Nationalities, error)
+	UpdateNationality(context.Context, *Nationality) (*Void, error)
+	DeleteNationality(context.Context, *NId) (*Void, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -277,6 +463,48 @@ func (UnimplementedUserServiceServer) GetUserFollows(context.Context, *Id) (*Cou
 }
 func (UnimplementedUserServiceServer) MostPopularUser(context.Context, *Void) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MostPopularUser not implemented")
+}
+func (UnimplementedUserServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
+}
+func (UnimplementedUserServiceServer) LoginEmail(context.Context, *LoginEmailRequest) (*LoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoginEmail not implemented")
+}
+func (UnimplementedUserServiceServer) LoginUsername(context.Context, *LoginUsernameRequest) (*LoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoginUsername not implemented")
+}
+func (UnimplementedUserServiceServer) AcceptCodeToRegister(context.Context, *AcceptCode) (*RegisterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AcceptCodeToRegister not implemented")
+}
+func (UnimplementedUserServiceServer) ForgotPassword(context.Context, *ForgotPasswordRequest) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ForgotPassword not implemented")
+}
+func (UnimplementedUserServiceServer) RegisterAdmin(context.Context, *Message) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterAdmin not implemented")
+}
+func (UnimplementedUserServiceServer) ResetPassword(context.Context, *ResetPassReq) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResetPassword not implemented")
+}
+func (UnimplementedUserServiceServer) GetUserByEmail(context.Context, *Email) (*GetProfileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserByEmail not implemented")
+}
+func (UnimplementedUserServiceServer) UpdatePassword(context.Context, *UpdatePasswordReq) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePassword not implemented")
+}
+func (UnimplementedUserServiceServer) AddNationality(context.Context, *Nat) (*Nationality, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddNationality not implemented")
+}
+func (UnimplementedUserServiceServer) GetNationalityById(context.Context, *NId) (*Nationality, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetNationalityById not implemented")
+}
+func (UnimplementedUserServiceServer) ListNationalities(context.Context, *Pagination) (*Nationalities, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListNationalities not implemented")
+}
+func (UnimplementedUserServiceServer) UpdateNationality(context.Context, *Nationality) (*Void, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateNationality not implemented")
+}
+func (UnimplementedUserServiceServer) DeleteNationality(context.Context, *NId) (*Void, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteNationality not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -543,6 +771,258 @@ func _UserService_MostPopularUser_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Register(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_Register_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Register(ctx, req.(*RegisterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_LoginEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginEmailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).LoginEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_LoginEmail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).LoginEmail(ctx, req.(*LoginEmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_LoginUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginUsernameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).LoginUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_LoginUsername_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).LoginUsername(ctx, req.(*LoginUsernameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_AcceptCodeToRegister_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AcceptCode)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).AcceptCodeToRegister(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_AcceptCodeToRegister_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).AcceptCodeToRegister(ctx, req.(*AcceptCode))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ForgotPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ForgotPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ForgotPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ForgotPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ForgotPassword(ctx, req.(*ForgotPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_RegisterAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Message)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).RegisterAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_RegisterAdmin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RegisterAdmin(ctx, req.(*Message))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ResetPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResetPassReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ResetPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ResetPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ResetPassword(ctx, req.(*ResetPassReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetUserByEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Email)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserByEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetUserByEmail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserByEmail(ctx, req.(*Email))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdatePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePasswordReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdatePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UpdatePassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdatePassword(ctx, req.(*UpdatePasswordReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_AddNationality_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Nat)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).AddNationality(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_AddNationality_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).AddNationality(ctx, req.(*Nat))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetNationalityById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetNationalityById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetNationalityById_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetNationalityById(ctx, req.(*NId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ListNationalities_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Pagination)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ListNationalities(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ListNationalities_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ListNationalities(ctx, req.(*Pagination))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdateNationality_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Nationality)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateNationality(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UpdateNationality_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateNationality(ctx, req.(*Nationality))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_DeleteNationality_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).DeleteNationality(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_DeleteNationality_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).DeleteNationality(ctx, req.(*NId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -605,6 +1085,62 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MostPopularUser",
 			Handler:    _UserService_MostPopularUser_Handler,
+		},
+		{
+			MethodName: "Register",
+			Handler:    _UserService_Register_Handler,
+		},
+		{
+			MethodName: "LoginEmail",
+			Handler:    _UserService_LoginEmail_Handler,
+		},
+		{
+			MethodName: "LoginUsername",
+			Handler:    _UserService_LoginUsername_Handler,
+		},
+		{
+			MethodName: "AcceptCodeToRegister",
+			Handler:    _UserService_AcceptCodeToRegister_Handler,
+		},
+		{
+			MethodName: "ForgotPassword",
+			Handler:    _UserService_ForgotPassword_Handler,
+		},
+		{
+			MethodName: "RegisterAdmin",
+			Handler:    _UserService_RegisterAdmin_Handler,
+		},
+		{
+			MethodName: "ResetPassword",
+			Handler:    _UserService_ResetPassword_Handler,
+		},
+		{
+			MethodName: "GetUserByEmail",
+			Handler:    _UserService_GetUserByEmail_Handler,
+		},
+		{
+			MethodName: "UpdatePassword",
+			Handler:    _UserService_UpdatePassword_Handler,
+		},
+		{
+			MethodName: "AddNationality",
+			Handler:    _UserService_AddNationality_Handler,
+		},
+		{
+			MethodName: "GetNationalityById",
+			Handler:    _UserService_GetNationalityById_Handler,
+		},
+		{
+			MethodName: "ListNationalities",
+			Handler:    _UserService_ListNationalities_Handler,
+		},
+		{
+			MethodName: "UpdateNationality",
+			Handler:    _UserService_UpdateNationality_Handler,
+		},
+		{
+			MethodName: "DeleteNationality",
+			Handler:    _UserService_DeleteNationality_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

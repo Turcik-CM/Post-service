@@ -24,9 +24,27 @@ func (b *BasicAdditional) GetUserRecommendation(in *pb.Username) (*pb.PostListRe
 
 	var postID []string
 	err := b.db.Select(&postID, "SELECT post_id FROM likes WHERE user_id=$1 ORDER BY created_at DESC LIMIT 10", in.Username)
-	if errors.Is(err, sql.ErrNoRows) {
-		err = b.db.Select(&res.Post, "SELECT id, user_id, country, location, title, hashtag, content, image_url, created_at, updated_at FROM posts ORDER BY created_at DESC LIMIT 20")
-		return res, err
+	if errors.Is(err, sql.ErrNoRows) || len(postID) == 0 {
+
+		rows, err := b.db.Query("SELECT id, user_id, country, location, title, hashtag, content, image_url, created_at, updated_at FROM posts ORDER BY created_at DESC LIMIT 20")
+		if err != nil {
+			log.Println("Error in getting posts:", err)
+			return nil, err
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var post pb.PostResponse
+			err = rows.Scan(&post.Id, &post.UserId, &post.Country, &post.Location, &post.Title, &post.Hashtag, &post.Content, &post.ImageUrl, &post.CreatedAt, &post.UpdatedAt)
+			if err != nil {
+				log.Println("Error in Scanning posts:", err)
+				return nil, err
+			}
+
+			res.Post = append(res.Post, &post)
+		}
+
+		return res, nil
 	}
 	if err != nil {
 		log.Println("Error in getting Post ID:", err)
